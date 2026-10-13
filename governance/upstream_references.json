@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-08-25",
+  "review_scope": "Architecture and Pi ecosystem review; no third-party code was vendored or enabled in production.",
+  "references": [
+    {
+      "name": "earendil-works/pi",
+      "url": "https://github.com/earendil-works/pi",
+      "commit": "cacb5917f9712d7e80807f540b7dd70885422bf6",
+      "license": "MIT",
+      "decision": "runtime_and_extension_api_basis"
+    },
+    {
+      "name": "microsoft/qlib",
+      "url": "https://github.com/microsoft/qlib",
+      "commit": "79633dd9506ea689e5400dea0197717b5b3d74b7",
+      "license": "MIT",
+      "decision": "adopt_architecture_concepts_only"
+    },
+    {
+      "name": "microsoft/RD-Agent",
+      "url": "https://github.com/microsoft/RD-Agent",
+      "commit": "6762f84f9bc0f5c6486c50a00e128a57ac6c3683",
+      "license": "MIT",
+      "decision": "adopt_governed_experiment_loop_concepts_only"
+    },
+    {
+      "name": "QuantConnect/Lean",
+      "url": "https://github.com/QuantConnect/Lean",
+      "commit": "81a62a1eb4d4e0a96bb7c3d183b4083c47d2b600",
+      "license": "Apache-2.0",
+      "decision": "adopt_execution_model_test_concepts_only"
+    },
+    {
+      "name": "TauricResearch/TradingAgents",
+      "url": "https://github.com/TauricResearch/TradingAgents",
+      "commit": "a33fd4c0f134485a43553a2c23a63cb14adbd88f",
+      "license": "Apache-2.0",
+      "decision": "reference_adversarial_review_only"
+    },
+    {
+      "name": "ricequant/rqalpha",
+      "url": "https://github.com/ricequant/rqalpha",
+      "commit": "3503ab57932540cd36bf8375134e52c6923bf0d2",
+      "license": "conflicting_public_commercial_statements",
+      "decision": "reference_only_no_code_or_dependency"
+    },
+    {
+      "name": "kenryu42/cc-safety-net",
+      "url": "https://github.com/kenryu42/cc-safety-net",
+      "commit": "8e3bd08ecfd751e36162f300f3f3cb87efd4c6d2",
+      "license": "MIT",
+      "decision": "candidate_interactive_operator_only_not_installed"
+    },
+    {
+      "name": "gotgenes/pi-packages/pi-permission-system",
+      "url": "https://github.com/gotgenes/pi-packages/tree/main/packages/pi-permission-system",
+      "commit": "c2735d9c8484d2064fe2ed494fb1a5babccaf5c3",
+      "license": "MIT",
+      "decision": "candidate_interactive_operator_only_not_installed"
+    },
+    {
+      "name": "jwu/pi-subagents",
+      "url": "https://github.com/jwu/pi-subagents",
+      "commit": "4b581fa6294e52acd82dc02a13b5538b8e77fa5c",
+      "license": "MIT",
+      "decision": "rejected_duplicate_production_orchestration"
+    },
+    {
+      "name": "apmantza/pi-lens",
+      "url": "https://github.com/apmantza/pi-lens",
+      "commit": "d03e257847478b0ea173ddd1a9204e90f70c771b",
+      "license": "MIT",
+      "decision": "defer_prepare_script_downloads_and_git_hooks"
+    }
+  ]
+}

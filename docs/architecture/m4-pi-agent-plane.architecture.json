@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "模块 4 · Pi Agent 认知层（无工具解释层）",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "orch",
+      "type": "backend",
+      "label": "编排器（模块 5）",
+      "sublabel": "7 角色一次性 turn",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "contracts",
+      "type": "security",
+      "label": "输出契约",
+      "sublabel": "validate_agent_output()",
+      "tag": "JSON+禁止资金语言",
+      "pos": [
+        290,
+        60
+      ],
+      "size": [
+        200,
+        68
+      ]
+    },
+    {
+      "id": "base",
+      "type": "backend",
+      "label": "BaseAgent 双模式",
+      "sublabel": "run / execute_pi / mock_execute",
+      "tag": "契约失败 1 次修复",
+      "pos": [
+        290,
+        220
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "prompts",
+      "type": "database",
+      "label": "角色提示词",
+      "sublabel": "quant_agents/agents/",
+      "tag": "7 个 Pi role",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "pi",
+      "type": "backend",
+      "label": "PiClient",
+      "sublabel": "build_command / agent_turn_json",
+      "tag": "PI_CHILD_ENV_ALLOWLIST",
+      "pos": [
+        560,
+        220
+      ],
+      "size": [
+        195,
+        72
+      ]
+    },
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "无工具安全策略",
+      "sublabel": "PI_SECURITY_FLAGS ×9",
+      "tag": "--no-tools --offline",
+      "pos": [
+        810,
+        440
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "picli",
+      "type": "external",
+      "label": "Pi CLI 0.84.2",
+      "sublabel": "本地 Node ≥22.19 子进程",
+      "pos": [
+        830,
+        220
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "deepseek",
+      "type": "external",
+      "label": "DeepSeek API",
+      "sublabel": "deepseek-v4-pro",
+      "tag": "唯一凭据 DEEPSEEK_API_KEY",
+      "pos": [
+        1080,
+        220
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "audit",
+      "type": "database",
+      "label": "认知审计产物",
+      "sublabel": "raw_outputs/ + pi_meta/",
+      "tag": "usage/response_id/prompt hash",
+      "pos": [
+        1080,
+        440
+      ],
+      "size": [
+        200,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Pi 认知层（仓库内资产 + 本地 runtime）",
+      "wraps": [
+        "contracts",
+        "prompts",
+        "base",
+        "pi",
+        "policy",
+        "picli"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "orch-base",
+      "from": "orch",
+      "to": "base",
+      "label": "编排"
+    },
+    {
+      "id": "contracts-base",
+      "from": "contracts",
+      "to": "base",
+      "label": "JSON 校验",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "prompts-base",
+      "from": "prompts",
+      "to": "base",
+      "label": "role 注入",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "base-pi",
+      "from": "base",
+      "to": "pi",
+      "label": "构建命令"
+    },
+    {
+      "id": "pi-picli",
+      "from": "pi",
+      "to": "picli",
+      "label": "spawn"
+    },
+    {
+      "id": "picli-deepseek",
+      "from": "picli",
+      "to": "deepseek",
+      "label": "唯一外呼",
+      "variant": "emphasis"
+    },
+    {
+      "id": "policy-pi",
+      "from": "policy",
+      "to": "pi",
+      "label": "环境隔离",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "pi-audit",
+      "from": "pi",
+      "to": "audit",
+      "label": "JSONL+元数据",
+      "fromSide": "top",
+      "toSide": "right",
+      "via": [
+        [
+          657.5,
+          175
+        ],
+        [
+          1330,
+          175
+        ],
+        [
+          1330,
+          472
+        ]
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "隔离即架构",
+      "items": [
+        "Pi 非沙箱：no-tools/no-skills/no-extensions/no-context 是生产硬要求",
+        "Pi 子进程环境用显式 allowlist，数据凭据不进入模型进程"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "输出契约",
+      "items": [
+        "输出必须是 JSON object，禁止真实资金动作语言",
+        "契约失败仅一次独立修复 turn，两次用量合并计入预算"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "供应链边界",
+      "items": [
+        "生产不装第三方 package",
+        "operator skills/extension 仅交互使用，SHA-256 锁定审计"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quant Run Operations"
+  short_description: "Operate and diagnose the Pi quant pipeline"
+  default_prompt: "Operate or diagnose the Pi quant research pipeline with full audit evidence."

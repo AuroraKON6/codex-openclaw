@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-25T00:00:00+08:00",
+  "policy": {
+    "production_extensions_enabled": false,
+    "required_pi_flag": "--no-extensions",
+    "installation_mode": "project-authored-hash-lock-explicit-load",
+    "third_party_packages_installed": false,
+    "network_access_allowed": false,
+    "subprocess_access_allowed": false,
+    "write_access_allowed": false
+  },
+  "extensions": [
+    {
+      "name": "quant-ops-readonly",
+      "path": ".pi/extensions/quant-ops-readonly.mjs",
+      "origin": "project-authored",
+      "production_enabled": false,
+      "operator_load_mode": "explicit_cli_only",
+      "capabilities": [
+        "read_project_run_metadata",
+        "interactive_ui"
+      ],
+      "upstream_references": [
+        {
+          "url": "https://github.com/earendil-works/pi/tree/main/packages/coding-agent/examples/extensions",
+          "commit": "cacb5917f9712d7e80807f540b7dd70885422bf6"
+        }
+      ],
+      "sha256": "1dcdb897d349b861c76af82ae57a2c502eb24505fca891e892714ed26d4a96de"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-25T00:00:00+08:00",
+  "policy": {
+    "production_skills_enabled": false,
+    "allow_executable_skill_files": false,
+    "required_pi_flag": "--no-skills",
+    "installation_mode": "review-adapt-hash-lock"
+  },
+  "skills": [
+    {
+      "name": "quant-agent-evaluation",
+      "path": ".pi/skills/quant-agent-evaluation",
+      "origin": "project-adapted",
+      "production_enabled": false,
+      "upstream_references": [
+        {
+          "url": "https://github.com/arjunprabhulal/agent-skills/tree/main/skills/agent-lifecycle/agent-evaluation",
+          "commit": "42dd24080fce6d731d00e2a1134f398c3da4171b"
+        },
+        {
+          "url": "https://github.com/agentskills/agentskills",
+          "commit": "69ef37e9424c0a7ea9dd2293b559e43ec8176379"
+        }
+      ],
+      "files": {
+        "agents/openai.yaml": "426e9619ddac15d1c60cf2e86e5a98748173df0d35eef996fd3bad505b42809b",
+        "references/evaluation-contract.md": "8f3445b6155655720d52bbff9a9bb9d13859a33917d5a3c8aabebc992fd73cf5",
+        "SKILL.md": "058861d15850557dfe4bb9ff1ea63543b5e8029380f1c95171d9fbc5dc938ec0"
+      }
+    },
+    {
+      "name": "quant-backtest-assurance",
+      "path": ".pi/skills/quant-backtest-assurance",
+      "origin": "project-adapted",
+      "production_enabled": false,
+      "upstream_references": [
+        {
+          "url": "https://github.com/wshobson/agents/tree/main/plugins/quantitative-trading/skills/backtesting-frameworks",
+          "commit": "367cb6a4a182cf7e9b0a17c9429f7411ddd9cf35"
+        },
+        {
+          "url": "https://github.com/agentskills/agentskills",
+          "commit": "69ef37e9424c0a7ea9dd2293b559e43ec8176379"
+        }
+      ],
+      "files": {
+        "agents/openai.yaml": "c3342216078cbabcb83e96cc3b834d52ecb5d1ca819c626b66f1e1648fdebf97",
+        "references/a-share-execution-gates.md": "99894bf87f688a8175b06cc30ad2c7fd9b44f7bd7a13c6286249ceb3fb576f7c",
+        "SKILL.md": "5f15fdf60da1879ce9d71f8c5af3ec875f1a4b148c3e807bcf344ea27493438d"
+      }
+    },
+    {
+      "name": "quant-data-governance",
+      "path": ".pi/skills/quant-data-governance",
+      "origin": "project-authored",
+      "production_enabled": false,
+      "upstream_references": [],
+      "files": {
+        "agents/openai.yaml": "7f177e752af1e2e91dd7419fa42d577596d32e7f9d8db8c02e47124ae39d336b",
+        "SKILL.md": "9306bec57935a83f9e8a870418895d34f3b24a96585a9d388c688a518f41e15e"
+      }
+    },
+    {
+      "name": "quant-release-review",
+      "path": ".pi/skills/quant-release-review",
+      "origin": "project-authored",
+      "production_enabled": false,
+      "upstream_references": [],
+      "files": {
+        "agents/openai.yaml": "4520836c06ffc77a9a80e515a480c68cf699533d008588ae13cb4e454cfc2ef6",
+        "SKILL.md": "ddcbe78af97c24973d88c266177753cc75c44a646917f1409a16835590ff9e34"
+      }
+    },
+    {
+      "name": "quant-run-operations",
+      "path": ".pi/skills/quant-run-operations",
+      "origin": "project-authored",
+      "production_enabled": false,
+      "upstream_references": [],
+      "files": {
+        "agents/openai.yaml": "8af9c0127dc5af2d2e69965706b262e2e9e62f6178a7089db14caaea14609080",
+        "SKILL.md": "5f50045e6d4e3952bcad6cbdfe87bef0040afbd6eb33c6c5bc724b060184cd3e"
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "project_id": "csi500-quant-research",
+  "registry_id": "REPLACE_WITH_ORGANIZATION_REGISTRY_ID",
+  "status": "ACTIVE",
+  "registered_at": "REPLACE_WITH_TIMEZONE_AWARE_REGISTRATION_TIMESTAMP",
+  "valid_from": "REPLACE_WITH_YYYY-MM-DD",
+  "valid_until": "REPLACE_WITH_YYYY-MM-DD",
+  "system_of_record_reference": "REPLACE_WITH_ORGANIZATION_SYSTEM_REFERENCE",
+  "allowed_run_classes": [
+    "development_backtest",
+    "forward_observation_refresh"
+  ],
+  "retention_days": 730,
+  "append_only": true,
+  "live_execution_authorized": false,
+  "external_distribution_authorized": false,
+  "approvals": [
+    {
+      "role": "quant_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_QUANT_OWNER",
+      "approved_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+      "evidence_reference": "REPLACE_WITH_DISTINCT_APPROVAL_REFERENCE"
+    },
+    {
+      "role": "independent_model_validator",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_INDEPENDENT_VALIDATOR",
+      "approved_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+      "evidence_reference": "REPLACE_WITH_DISTINCT_APPROVAL_REFERENCE"
+    },
+    {
+      "role": "platform_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_PLATFORM_OWNER",
+      "approved_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+      "evidence_reference": "REPLACE_WITH_DISTINCT_APPROVAL_REFERENCE"
+    },
+    {
+      "role": "compliance_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_COMPLIANCE_OWNER",
+      "approved_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+      "evidence_reference": "REPLACE_WITH_DISTINCT_APPROVAL_REFERENCE"
+    }
+  ],
+  "supporting_document_type": "organization_experiment_registry_export",
+  "supporting_document_path": "REPLACE_WITH_EXTERNAL_ABSOLUTE_PATH",
+  "supporting_document_sha256": "REPLACE_WITH_LOWERCASE_SHA256"
+}

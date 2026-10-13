@@ -1,0 +1,73 @@
+{
+  "theme": "CSI500价格动量研究验证",
+  "scope": "CSI500",
+  "governance": {
+    "intended_use": "licensed_internal_research",
+    "data_provider": "tushare",
+    "external_distribution_requested": false,
+    "human_review_required": true
+  },
+  "date_range": {
+    "since": "20250101",
+    "until": "20250530"
+  },
+  "focus_sectors": ["科技", "消费", "医药", "新能源"],
+  "strategy_params": {
+    "factors": ["momentum"],
+    "rebalance": "biweekly",
+    "max_positions": 20,
+    "research_universe_size": 40,
+    "lookback_trade_days": 20
+  },
+  "data_controls": {
+    "minimum_data_quality": "GOOD",
+    "max_staleness_trade_days": 0
+  },
+  "execution_controls": {
+    "require_tradeability_data": true,
+    "minimum_daily_amount_cny": 50000000,
+    "simulation_notional_cny": 10000000,
+    "max_participation_rate": 0.05,
+    "execution_price_policy": "prior_close_after_signal_lag",
+    "price_limit_fill_policy": "directional_close_conservative",
+    "order_time_in_force": "DAY",
+    "unfilled_order_policy": "cancel_at_session_end_recompute_next_rebalance",
+    "round_lot_enforced": true,
+    "t_plus_one_enforced": true,
+    "cost_model": {
+      "model_id": "csi500-research-conservative-v1",
+      "broker_commission_quote_mode": "all_in_regulatory",
+      "broker_commission_rate": 0.00025,
+      "minimum_commission_cny": 5,
+      "slippage_bps": 5,
+      "market_impact_bps": 2,
+      "cost_assumption_source": "conservative research assumption pending mandate-specific broker statement calibration"
+    }
+  },
+  "validation_controls": {
+    "hypothesis_id": "csi500-cross-sectional-momentum-v1",
+    "parameter_selection_policy": "pre_registered_no_search",
+    "parameter_search_count": 0,
+    "holdout_fraction": 0.3,
+    "minimum_holdout_trade_days": 20,
+    "cost_stress_multipliers": [1.5, 2.0],
+    "signal_delay_stress_trade_days": [2],
+    "walk_forward": {
+      "fold_count": 3,
+      "fold_trade_days": 20,
+      "minimum_development_trade_days": 20,
+      "minimum_passing_folds": 2
+    },
+    "acceptance_thresholds": {
+      "minimum_holdout_trade_count": 2,
+      "minimum_holdout_sharpe": -0.5,
+      "maximum_holdout_drawdown": -0.25,
+      "minimum_double_cost_total_return": -0.25
+    }
+  },
+  "schedule_controls": {
+    "lookback_calendar_days": 365,
+    "not_before_local_time": "18:30"
+  },
+  "notes": "默认仅用于已取得书面数据授权的内部研究；Mock 可用于软件验收"
+}

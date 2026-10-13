@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "模块 5 · 运行控制层（编排 / 运维 / 调度）",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "ps",
+      "type": "external",
+      "label": "计划任务 / PS 脚本",
+      "sublabel": "run_quant_agents / run_daily_research",
+      "tag": "隐藏·IgnoreNew·Limited",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        215,
+        72
+      ]
+    },
+    {
+      "id": "cli",
+      "type": "backend",
+      "label": "CLI 入口",
+      "sublabel": "__main__.py · 12 命令",
+      "tag": "health/run/release/forward",
+      "pos": [
+        315,
+        220
+      ],
+      "size": [
+        195,
+        72
+      ]
+    },
+    {
+      "id": "config",
+      "type": "backend",
+      "label": "配置基线",
+      "sublabel": "config.Config.validate()",
+      "tag": "预算/定价/保留期",
+      "pos": [
+        315,
+        460
+      ],
+      "size": [
+        195,
+        64
+      ]
+    },
+    {
+      "id": "guard",
+      "type": "backend",
+      "label": "锁 · 幂等 · 恢复",
+      "sublabel": "RunLock / idempotency / recover",
+      "tag": "stale→interrupted",
+      "pos": [
+        575,
+        220
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "source",
+      "type": "security",
+      "label": "源码基线门禁",
+      "sublabel": "source_baseline / source_review",
+      "tag": "clean commit/tag",
+      "pos": [
+        575,
+        460
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "preflight",
+      "type": "backend",
+      "label": "门禁预检编排",
+      "sublabel": "orchestrator.run_pipeline()",
+      "tag": "schema 7 硬顺序",
+      "pos": [
+        845,
+        220
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "dag",
+      "type": "backend",
+      "label": "7 Agent DAG",
+      "sublabel": "依赖失败阻断下游",
+      "tag": "失败不原地续跑",
+      "pos": [
+        1115,
+        220
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "budget",
+      "type": "backend",
+      "label": "预算与时限",
+      "sublabel": "evaluate_budget_gate()",
+      "tag": "≤2 USD/run · 2400s",
+      "pos": [
+        845,
+        460
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "opsdb",
+      "type": "database",
+      "label": "运行审计产物",
+      "sublabel": "events/metrics/alerts/manifest",
+      "tag": "append-only 事件链",
+      "pos": [
+        1115,
+        460
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "schedule",
+      "type": "backend",
+      "label": "调度输入与授权",
+      "sublabel": "build_scheduled_input()",
+      "tag": "authorization schema 3",
+      "pos": [
+        47.5,
+        460
+      ],
+      "size": [
+        200,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "quant_agents 运行控制（仓库内代码）",
+      "wraps": [
+        "cli",
+        "config",
+        "guard",
+        "source",
+        "preflight",
+        "dag",
+        "budget",
+        "schedule"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ps-cli",
+      "from": "ps",
+      "to": "cli",
+      "label": "真实运行"
+    },
+    {
+      "id": "cli-guard",
+      "from": "cli",
+      "to": "guard",
+      "label": "锁+幂等"
+    },
+    {
+      "id": "guard-preflight",
+      "from": "guard",
+      "to": "preflight"
+    },
+    {
+      "id": "preflight-dag",
+      "from": "preflight",
+      "to": "dag",
+      "label": "7 个 turn"
+    },
+    {
+      "id": "config-cli",
+      "from": "config",
+      "to": "cli",
+      "label": "配置基线",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "source-preflight",
+      "from": "source",
+      "to": "preflight",
+      "label": "clean source",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "budget-preflight",
+      "from": "budget",
+      "to": "preflight",
+      "label": "预算包络",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "dag-opsdb",
+      "from": "dag",
+      "to": "opsdb",
+      "label": "事件/告警",
+      "labelDy": 55
+    },
+    {
+      "id": "schedule-ps",
+      "from": "schedule",
+      "to": "ps",
+      "label": "冻结输入",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 64
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "失败纪律",
+      "items": [
+        "preflight 失败与中断都保留完整失败审计",
+        "恢复用新 Run ID 并以 retry_of 关联，不原地续跑"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "互斥与幂等",
+      "items": [
+        "RunLock 心跳 + 陈旧锁归档 interrupted",
+        "request_id 幂等，重复请求直接拒绝"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "预算与时限",
+      "items": [
+        "token/成本双门禁，provider-reported 与估算取高值",
+        "单 Agent 300s、整线 2400s 硬超时"
+      ]
+    }
+  ]
+}

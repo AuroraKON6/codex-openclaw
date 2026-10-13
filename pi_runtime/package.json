@@ -1,0 +1,10 @@
+{
+  "name": "quant-research-pi-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pinned Pi Agent runtime for the isolated quant research pipeline",
+  "type": "module",
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.2"
+  }
+}

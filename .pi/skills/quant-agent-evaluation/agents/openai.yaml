@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quant Agent Evaluation"
+  short_description: "Evaluate Pi Agent contracts and regressions"
+  default_prompt: "Design or review an evidence-backed evaluation for the seven production Pi Agents."

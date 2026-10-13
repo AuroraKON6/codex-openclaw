@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quant Data Governance"
+  short_description: "Validate CSI 500 data rights and quality gates"
+  default_prompt: "Validate this quant run data governance evidence without bypassing any gate."

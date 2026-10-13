@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "provider": "tushare",
+  "status": "PENDING",
+  "licensee_legal_name": "REPLACE_WITH_LICENSEE_LEGAL_NAME",
+  "contract_reference": "REPLACE_WITH_CONTRACT_REFERENCE",
+  "provider_approval_reference": "REPLACE_WITH_PROVIDER_WRITTEN_APPROVAL_REFERENCE",
+  "provider_signatory_name": "REPLACE_WITH_PROVIDER_SIGNATORY_NAME",
+  "provider_signatory_title": "REPLACE_WITH_PROVIDER_SIGNATORY_TITLE",
+  "licensee_approver_name": "REPLACE_WITH_LICENSEE_APPROVER_NAME",
+  "licensee_approver_title": "REPLACE_WITH_LICENSEE_APPROVER_TITLE",
+  "separate_written_organizational_authorization": false,
+  "organizational_use_permitted": false,
+  "commercial_internal_research_permitted": false,
+  "valid_from": "2026-01-01",
+  "valid_until": "2026-12-31",
+  "provider_terms_url": "https://tushare.pro/document/1?doc_id=405",
+  "provider_terms_reviewed_at": "REPLACE_WITH_YYYY-MM-DD",
+  "permitted_uses": [
+    "licensed_internal_research"
+  ],
+  "permitted_endpoints": [
+    "trade_cal",
+    "index_weight",
+    "daily",
+    "adj_factor",
+    "stk_limit",
+    "suspend_d",
+    "daily_basic"
+  ],
+  "permitted_processing": [
+    "automated_api_access",
+    "local_cache",
+    "derived_analytics",
+    "third_party_llm_processing"
+  ],
+  "permitted_processors": [
+    "deepseek"
+  ],
+  "maximum_retention_days": 0,
+  "termination_disposition": "REPLACE_WITH_DELETE_OR_RETURN_TERM",
+  "external_distribution_permitted": false,
+  "supporting_document_type": "REPLACE_WITH_PROVIDER_DOCUMENT_TYPE",
+  "supporting_document_path": "REPLACE_WITH_ABSOLUTE_OR_RELATIVE_SIGNED_DOCUMENT_PATH",
+  "supporting_document_sha256": "REPLACE_WITH_LOWERCASE_SHA256"
+}

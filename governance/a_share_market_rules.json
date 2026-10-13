@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "rulebook_id": "cn-a-share-cash-equity-research-v1",
+  "verified_as_of": "2026-08-23",
+  "scope": "SSE and SZSE cash A-shares used by the CSI 500 research universe; no broker routing or live execution",
+  "sources": {
+    "sse_trading_2023": {
+      "title": "上海证券交易所交易规则（2023年修订）",
+      "url": "https://www.sse.com.cn/lawandrules/sselawsrules2025/repeal/rules/c/c_20250612_10824490.shtml",
+      "status": "historical_effective_rule"
+    },
+    "szse_trading_2023": {
+      "title": "深圳证券交易所交易规则（2023年修订）",
+      "url": "https://investor.szse.cn/lawrules/index/rule/t20230217_598773.html",
+      "status": "historical_effective_rule"
+    },
+    "sse_trading_2026": {
+      "title": "上海证券交易所交易规则（2026年修订）",
+      "url": "https://www.sse.com.cn/lawandrules/sselawsrules2025/stocks/exchange/c/c_20260424_10816482.shtml",
+      "status": "current"
+    },
+    "szse_trading_2026": {
+      "title": "深圳证券交易所交易规则（2026年修订）",
+      "url": "https://www.szse.cn/lawrules/rule/trade/current/t20260424_620190.html",
+      "status": "current"
+    },
+    "sse_star_lot": {
+      "title": "上海证券交易所科创板股票交易申报数量规则",
+      "url": "https://edu.sse.com.cn/tib/",
+      "status": "current"
+    },
+    "stamp_duty_2023": {
+      "title": "财政部 税务总局关于减半征收证券交易印花税的公告",
+      "url": "https://jx.mof.gov.cn/xxgk/zhengcefagui/202309/t20230904_3905337.htm",
+      "status": "current"
+    },
+    "chinaclear_transfer_fee": {
+      "title": "中国结算上海市场证券登记结算业务收费及代收税费一览表",
+      "url": "https://www.chinaclear.cn/zdjs/fbzyls/202506/9d22b74d9f2e40edb67b44d1f6596f18/files/%E4%B8%8A%E6%B5%B7%E5%B8%82%E5%9C%BA%E8%AF%81%E5%88%B8%E7%99%BB%E8%AE%B0%E7%BB%93%E7%AE%97%E4%B8%9A%E5%8A%A1%E6%94%B6%E8%B4%B9%E5%8F%8A%E4%BB%A3%E6%94%B6%E7%A8%8E%E8%B4%B9%E4%B8%80%E8%A7%88%E8%A1%A8.pdf",
+      "status": "current"
+    },
+    "sse_fees": {
+      "title": "上海证券交易所收费管理规则适用指引第1号——收费项目及标准（2023年8月修订）",
+      "url": "https://www.sse.com.cn/lawandrules/sselawsrules2025/charge/c/c_20250610_10781461.shtml",
+      "status": "current"
+    },
+    "szse_fees_2026": {
+      "title": "深圳证券交易所收费及代收税费标准（2026年1月）",
+      "url": "https://investor.szse.cn/marketServices/deal/payFees/index.html",
+      "status": "current"
+    },
+    "sse_investor_fees": {
+      "title": "上海证券交易所股票投资交易费用说明",
+      "url": "https://one.sse.com.cn/onething/gptz/",
+      "status": "current"
+    }
+  },
+  "policies": [
+    {
+      "policy_id": "cn-a-share-2023-08-28",
+      "effective_from": "20230828",
+      "effective_until": "20260705",
+      "source_ids": [
+        "sse_trading_2023",
+        "szse_trading_2023",
+        "sse_star_lot",
+        "stamp_duty_2023",
+        "chinaclear_transfer_fee",
+        "sse_fees",
+        "szse_fees_2026",
+        "sse_investor_fees"
+      ],
+      "fees": {
+        "stamp_duty_sell_rate": 0.0005,
+        "transfer_fee_rate": 0.00001,
+        "exchange_handling_fee_rate": 0.0000341,
+        "regulatory_fee_rate": 0.00002,
+        "exchange_and_regulatory_fees_embedded_in_all_in_commission": true
+      },
+      "trading": {
+        "t_plus_one": true,
+        "price_tick_cny": 0.01,
+        "boards": {
+          "SSE_MAIN": {
+            "minimum_order_shares": 100,
+            "order_increment_shares": 100,
+            "maximum_limit_order_shares": 1000000,
+            "odd_lot_full_exit_allowed": true
+          },
+          "SSE_STAR": {
+            "minimum_order_shares": 200,
+            "order_increment_shares": 1,
+            "maximum_limit_order_shares": 100000,
+            "odd_lot_full_exit_allowed": true
+          },
+          "SZSE_MAIN": {
+            "minimum_order_shares": 100,
+            "order_increment_shares": 100,
+            "maximum_limit_order_shares": 1000000,
+            "odd_lot_full_exit_allowed": true
+          },
+          "SZSE_CHINEXT": {
+            "minimum_order_shares": 100,
+            "order_increment_shares": 100,
+            "maximum_limit_order_shares": 300000,
+            "odd_lot_full_exit_allowed": true
+          }
+        }
+      }
+    },
+    {
+      "policy_id": "cn-a-share-2026-07-06",
+      "effective_from": "20260706",
+      "effective_until": null,
+      "source_ids": [
+        "sse_trading_2026",
+        "szse_trading_2026",
+        "sse_star_lot",
+        "stamp_duty_2023",
+        "chinaclear_transfer_fee",
+        "sse_fees",
+        "szse_fees_2026",
+        "sse_investor_fees"
+      ],
+      "fees": {
+        "stamp_duty_sell_rate": 0.0005,
+        "transfer_fee_rate": 0.00001,
+        "exchange_handling_fee_rate": 0.0000341,
+        "regulatory_fee_rate": 0.00002,
+        "exchange_and_regulatory_fees_embedded_in_all_in_commission": true
+      },
+      "trading": {
+        "t_plus_one": true,
+        "price_tick_cny": 0.01,
+        "boards": {
+          "SSE_MAIN": {
+            "minimum_order_shares": 100,
+            "order_increment_shares": 100,
+            "maximum_limit_order_shares": 1000000,
+            "odd_lot_full_exit_allowed": true
+          },
+          "SSE_STAR": {
+            "minimum_order_shares": 200,
+            "order_increment_shares": 1,
+            "maximum_limit_order_shares": 100000,
+            "odd_lot_full_exit_allowed": true
+          },
+          "SZSE_MAIN": {
+            "minimum_order_shares": 100,
+            "order_increment_shares": 100,
+            "maximum_limit_order_shares": 1000000,
+            "odd_lot_full_exit_allowed": true
+          },
+          "SZSE_CHINEXT": {
+            "minimum_order_shares": 100,
+            "order_increment_shares": 100,
+            "maximum_limit_order_shares": 300000,
+            "odd_lot_full_exit_allowed": true
+          }
+        }
+      }
+    }
+  ]
+}

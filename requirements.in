@@ -1,0 +1,5 @@
+# Direct runtime dependencies reviewed for the Windows CPython 3.11 baseline.
+# Regenerate requirements.txt in an isolated environment; do not loosen pins in-place.
+httpx==0.28.1
+matplotlib==3.11.1
+tushare==1.4.29

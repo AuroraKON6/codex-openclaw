@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "campaign_id": "REPLACE_WITH_CAMPAIGN_ID",
+  "decision": "RETIRED",
+  "effective_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+  "reason": "REPLACE_WITH_MATERIAL_REASON",
+  "evidence_reference": "REPLACE_WITH_ORGANIZATION_CHANGE_TICKET",
+  "live_execution_authorized": false,
+  "approvals": [
+    {
+      "role": "model_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_MODEL_OWNER",
+      "evidence_reference": "REPLACE_WITH_APPROVAL_REFERENCE"
+    },
+    {
+      "role": "compliance_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_COMPLIANCE_OWNER",
+      "evidence_reference": "REPLACE_WITH_APPROVAL_REFERENCE"
+    },
+    {
+      "role": "platform_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_PLATFORM_OWNER",
+      "evidence_reference": "REPLACE_WITH_APPROVAL_REFERENCE"
+    }
+  ],
+  "supporting_document_path": "REPLACE_WITH_EXTERNAL_ABSOLUTE_PATH",
+  "supporting_document_sha256": "REPLACE_WITH_LOWERCASE_SHA256"
+}

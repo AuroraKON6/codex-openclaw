@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "模块 3 · 确定性研究层（信号 / 回测 / 稳健性）",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "snapshot-in",
+      "type": "database",
+      "label": "市场快照（模块 2）",
+      "sublabel": "点时成分/行情/涨跌停/停牌",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "signals",
+      "type": "backend",
+      "label": "动量信号",
+      "sublabel": "compute_latest_momentum_signals()",
+      "tag": "20 日+显式滞后",
+      "pos": [
+        300,
+        220
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "逐订单回测引擎",
+      "sublabel": "run_momentum_backtest()",
+      "tag": "T+1/停牌/涨跌停",
+      "pos": [
+        550,
+        220
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "metrics",
+      "type": "database",
+      "label": "权威绩效指标",
+      "sublabel": "收益/Sharpe/回撤/胜率",
+      "tag": "LLM 不可覆盖",
+      "pos": [
+        810,
+        220
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "validation",
+      "type": "backend",
+      "label": "稳健性验证",
+      "sublabel": "run_robustness_validation()",
+      "tag": "holdout+3 折 WF+压力",
+      "pos": [
+        1060,
+        220
+      ],
+      "size": [
+        195,
+        72
+      ]
+    },
+    {
+      "id": "input-check",
+      "type": "security",
+      "label": "输入校验",
+      "sublabel": "validate_research_input()",
+      "tag": "执行/验证约束",
+      "pos": [
+        300,
+        60
+      ],
+      "size": [
+        190,
+        68
+      ]
+    },
+    {
+      "id": "rules-in",
+      "type": "backend",
+      "label": "规则簿（模块 2）",
+      "sublabel": "quantize/calculate_trade_cost",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "ledger",
+      "type": "database",
+      "label": "成本账本",
+      "sublabel": "backtest/cost_ledger.json",
+      "tag": "逐单对账",
+      "pos": [
+        810,
+        440
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "assurance",
+      "type": "security",
+      "label": "回测质量门禁",
+      "sublabel": "build_backtest_assurance()",
+      "tag": "PASSED_FOR_INTERNAL",
+      "pos": [
+        1060,
+        440
+      ],
+      "size": [
+        195,
+        72
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "quant_agents 确定性研究（仓库内代码）",
+      "wraps": [
+        "input-check",
+        "signals",
+        "engine",
+        "validation",
+        "assurance"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "snapshot-signals",
+      "from": "snapshot-in",
+      "to": "signals",
+      "label": "快照输入"
+    },
+    {
+      "id": "input-signals",
+      "from": "input-check",
+      "to": "signals",
+      "label": "参数合法",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "signals-engine",
+      "from": "signals",
+      "to": "engine"
+    },
+    {
+      "id": "engine-metrics",
+      "from": "engine",
+      "to": "metrics",
+      "label": "权威指标"
+    },
+    {
+      "id": "metrics-validation",
+      "from": "metrics",
+      "to": "validation",
+      "label": "样本外划分",
+      "labelDy": 55
+    },
+    {
+      "id": "engine-ledger",
+      "from": "engine",
+      "to": "ledger",
+      "label": "逐订单成本",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "rulesin-engine",
+      "from": "rules-in",
+      "to": "engine",
+      "label": "申报数量/费用",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "validation-assurance",
+      "from": "validation",
+      "to": "assurance",
+      "label": "通过判定",
+      "labelDx": 132.5,
+      "fromSide": "bottom",
+      "toSide": "top"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "执行真实性",
+      "items": [
+        "T+1、整手/申报上限、奇数股退出",
+        "停牌与涨跌停方向保守成交，当日未成交取消"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "成本对账",
+      "items": [
+        "佣金/最低佣金/印花税/过户费/滑点/冲击逐单入账",
+        "cost ledger 与净值逐单 reconciliation"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "样本外纪律",
+      "items": [
+        "尾部 holdout + 三折 expanding walk-forward",
+        "2 倍成本与额外 2 日时滞压力，≥2/3 折通过"
+      ]
+    }
+  ]
+}

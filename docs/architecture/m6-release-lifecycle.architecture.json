@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "模块 6 · 发布与生命周期层（审批 / 归档 / 前向）",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "run-in",
+      "type": "database",
+      "label": "已完成 run（模块 5）",
+      "sublabel": "runs/<run-id>/",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "integrity",
+      "type": "backend",
+      "label": "完整性验证",
+      "sublabel": "verify_run_integrity()",
+      "tag": "manifest+事件链",
+      "pos": [
+        300,
+        220
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "candidate",
+      "type": "backend",
+      "label": "发布候选",
+      "sublabel": "prepare_release_candidate()",
+      "tag": "绑定 manifest snapshot",
+      "pos": [
+        550,
+        220
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "approval",
+      "type": "security",
+      "label": "五方审批",
+      "sublabel": "verify_release_approval()",
+      "tag": "五个独立角色",
+      "pos": [
+        800,
+        220
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "forward",
+      "type": "backend",
+      "label": "前向观察",
+      "sublabel": "initialize_campaign()",
+      "tag": "仓库外 campaign",
+      "pos": [
+        1045,
+        220
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "weekly",
+      "type": "backend",
+      "label": "周报聚合",
+      "sublabel": "generate_weekly_report()",
+      "tag": "不替代单 run 证据",
+      "pos": [
+        45,
+        460
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "audit",
+      "type": "backend",
+      "label": "审计底座",
+      "sublabel": "build_file_manifest()",
+      "tag": "原子写/SHA-256",
+      "pos": [
+        300,
+        460
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "archive",
+      "type": "backend",
+      "label": "归档",
+      "sublabel": "archive_run()",
+      "tag": "ZIP+成员哈希+CRC",
+      "pos": [
+        515,
+        460
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "restore",
+      "type": "backend",
+      "label": "恢复复验",
+      "sublabel": "verify_archive()",
+      "tag": "安全临时解压",
+      "pos": [
+        765,
+        460
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "retention",
+      "type": "database",
+      "label": "保留计划",
+      "sublabel": "build_retention_plan()",
+      "tag": "365 天·legal hold",
+      "pos": [
+        755,
+        640
+      ],
+      "size": [
+        210,
+        64
+      ]
+    },
+    {
+      "id": "obsdb",
+      "type": "database",
+      "label": "观察账本",
+      "sublabel": "observations.jsonl",
+      "tag": "前缀哈希防重写",
+      "pos": [
+        1045,
+        460
+      ],
+      "size": [
+        190,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "quant_agents 发布与生命周期（仓库内代码）",
+      "wraps": [
+        "integrity",
+        "weekly",
+        "audit",
+        "candidate",
+        "approval",
+        "archive",
+        "restore",
+        "retention",
+        "forward"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "runin-integrity",
+      "from": "run-in",
+      "to": "integrity"
+    },
+    {
+      "id": "integrity-candidate",
+      "from": "integrity",
+      "to": "candidate",
+      "label": "候选+审批请求",
+      "labelDy": 55
+    },
+    {
+      "id": "candidate-approval",
+      "from": "candidate",
+      "to": "approval"
+    },
+    {
+      "id": "approval-forward",
+      "from": "approval",
+      "to": "forward",
+      "label": "批准后",
+      "variant": "emphasis"
+    },
+    {
+      "id": "runin-weekly",
+      "from": "run-in",
+      "to": "weekly",
+      "label": "聚合只读",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "audit-integrity",
+      "from": "audit",
+      "to": "integrity",
+      "label": "哈希底座",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 64
+    },
+    {
+      "id": "candidate-archive",
+      "from": "candidate",
+      "to": "archive",
+      "label": "归档发布物",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          645,
+          390
+        ],
+        [
+          610,
+          390
+        ]
+      ]
+    },
+    {
+      "id": "archive-restore",
+      "from": "archive",
+      "to": "restore"
+    },
+    {
+      "id": "restore-retention",
+      "from": "restore",
+      "to": "retention",
+      "label": "候选清单",
+      "labelDy": 55
+    },
+    {
+      "id": "forward-obsdb",
+      "from": "forward",
+      "to": "obsdb",
+      "label": "幂等追加",
+      "labelDy": 55
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Mock 永不发布",
+      "items": [
+        "mock/非真实数据/非 clean source/无批准一律阻断",
+        "release candidate 与五方审批绑定 run+manifest+源码"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "归档与恢复",
+      "items": [
+        "ZIP sidecar + 全员哈希 + CRC + 安全路径",
+        "恢复在安全临时目录重验 run integrity"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "生命周期边界",
+      "items": [
+        "observation 只追加防重写，暂停/独立验证/退役需外部证据",
+        "达到阈值最多进入独立验证，永不自动转真实交易"
+      ]
+    }
+  ]
+}

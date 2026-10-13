@@ -1,0 +1,22 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+runs/
+*.egg-info/
+dist/
+build/
+.tmp/
+.cache/
+scheduled_inputs/
+drill_reports/
+pi_runtime/node_modules/
+.pi/npm/
+.pi/git/
+
+# Mimosa security-scanner hook state (tool-generated, never project source)
+.mimosa/
+
+# ZCode plugin runtime markers (tool-generated, never project source)
+.v2c/
+.video_agent/

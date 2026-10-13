@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quant Release Review"
+  short_description: "Review internal research release gates"
+  default_prompt: "Review this run for internal research release readiness without trading advice."

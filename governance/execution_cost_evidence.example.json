@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "PENDING",
+  "scope": "CSI500",
+  "calibration_basis": "approved_conservative_assumption",
+  "provisional": true,
+  "sample_order_count": 0,
+  "calibrated_cost_model": {
+    "model_id": "csi500-research-conservative-v1",
+    "broker_commission_quote_mode": "all_in_regulatory",
+    "broker_commission_rate": 0.00025,
+    "minimum_commission_cny": 5,
+    "slippage_bps": 5,
+    "market_impact_bps": 2,
+    "cost_assumption_source": "conservative research assumption pending mandate-specific broker statement calibration"
+  },
+  "simulation_notional_cny": 10000000,
+  "max_participation_rate": 0.05,
+  "minimum_daily_amount_cny": 50000000,
+  "market_rulebook_sha256": "REPLACE_WITH_CURRENT_RULEBOOK_SHA256",
+  "double_cost_stress_required": true,
+  "live_execution_ready": false,
+  "quant_owner_approver": "REPLACE_WITH_QUANT_OWNER",
+  "independent_reviewer": "REPLACE_WITH_INDEPENDENT_REVIEWER",
+  "compliance_owner_approver": "REPLACE_WITH_COMPLIANCE_OWNER",
+  "valid_from": "2026-01-01",
+  "valid_until": "2026-12-31",
+  "reviewed_at": "REPLACE_WITH_YYYY-MM-DD",
+  "supporting_document_type": "broker_fee_schedule_and_internal_cost_memo",
+  "supporting_document_path": "REPLACE_WITH_EXTERNAL_CONTROLLED_DOCUMENT_PATH",
+  "supporting_document_sha256": "REPLACE_WITH_LOWERCASE_SHA256",
+  "limitations": [
+    "No live execution fills were used; parameters are provisional internal-research assumptions."
+  ]
+}

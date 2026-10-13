@@ -1,0 +1,1796 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "总图 · Governed Quant Research OS 全量细节架构",
+    "locale": "zh-CN",
+    "quality_profile": "standard",
+    "views": [
+      {
+        "id": "view-m1",
+        "label": "模块 1 · 治理与证据",
+        "focus": [
+          "m1-scan",
+          "m1-license",
+          "m1-protocol",
+          "m1-registry",
+          "m1-cost",
+          "m1-ledger",
+          "m1-evidence"
+        ],
+        "note": "五道硬门禁依次校验，证据与账本在仓库外。"
+      },
+      {
+        "id": "view-m5",
+        "label": "模块 5 · 运行控制",
+        "focus": [
+          "m5-ps",
+          "m5-cli",
+          "m5-guard",
+          "m5-source",
+          "m5-preflight",
+          "m5-dag",
+          "m5-budget",
+          "m5-opsdb"
+        ],
+        "note": "锁、幂等、源码门禁、预检编排、7 Agent DAG、预算与审计产物。"
+      },
+      {
+        "id": "view-m2m3",
+        "label": "模块 2+3 · 数据与研究",
+        "focus": [
+          "m2-tushare",
+          "m2-pit",
+          "m2-quality",
+          "m2-snapshot",
+          "m2-rules",
+          "m3-signals",
+          "m3-engine",
+          "m3-metrics",
+          "m3-validation",
+          "m3-assurance"
+        ],
+        "note": "点时采集与质量门禁，快照喂给确定性信号、回测与稳健性验证。"
+      },
+      {
+        "id": "view-m4",
+        "label": "模块 4 · Pi 认知层",
+        "focus": [
+          "m4-contracts",
+          "m4-base",
+          "m4-pi",
+          "m4-policy",
+          "m4-picli",
+          "m4-deepseek",
+          "m4-audit"
+        ],
+        "note": "无工具 JSON turn、环境隔离、契约校验与唯一外呼。"
+      },
+      {
+        "id": "view-m6",
+        "label": "模块 6 · 发布与生命周期",
+        "focus": [
+          "m6-runs",
+          "m6-integrity",
+          "m6-candidate",
+          "m6-approval",
+          "m6-archive",
+          "m6-forward",
+          "m6-obsdb"
+        ],
+        "note": "完整性→候选→五方审批→归档恢复→保留→前向账本。"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "input-json",
+      "type": "external",
+      "label": "研究输入",
+      "sublabel": "strategy_round.example.json",
+      "tag": "冻结契约",
+      "pos": [
+        40,
+        480
+      ],
+      "size": [
+        250,
+        72
+      ]
+    },
+    {
+      "id": "m1-evidence",
+      "type": "external",
+      "label": "仓库外证据原件",
+      "sublabel": "license / protocol / cost / registry",
+      "tag": "SHA-256 绑定",
+      "pos": [
+        400,
+        40
+      ],
+      "size": [
+        260,
+        68
+      ]
+    },
+    {
+      "id": "m1-scan",
+      "type": "security",
+      "label": "密钥扫描门禁",
+      "sublabel": "evaluate_secret_scan_receipt()",
+      "tag": "source gate 回执",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        150,
+        72
+      ]
+    },
+    {
+      "id": "m1-license",
+      "type": "security",
+      "label": "数据授权门禁",
+      "sublabel": "evaluate_data_license()",
+      "tag": "v2 组织书面授权",
+      "pos": [
+        240,
+        220
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "m1-protocol",
+      "type": "security",
+      "label": "研究协议门禁",
+      "sublabel": "evaluate_research_protocol()",
+      "tag": "v1 精确输入绑定",
+      "pos": [
+        450,
+        220
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "m1-registry",
+      "type": "security",
+      "label": "实验 Registry 门禁",
+      "sublabel": "verify_experiment_registry_gate()",
+      "tag": "RESERVED 先于调用",
+      "pos": [
+        660,
+        220
+      ],
+      "size": [
+        170,
+        72
+      ]
+    },
+    {
+      "id": "m1-cost",
+      "type": "security",
+      "label": "执行成本门禁",
+      "sublabel": "evaluate_execution_cost_evidence()",
+      "tag": "材料哈希+独立复核",
+      "pos": [
+        880,
+        220
+      ],
+      "size": [
+        170,
+        72
+      ]
+    },
+    {
+      "id": "m1-ledger",
+      "type": "database",
+      "label": "外部实验账本",
+      "sublabel": "registry.json + experiments.jsonl",
+      "tag": "追加式哈希链",
+      "pos": [
+        735,
+        480
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "m5-ps",
+      "type": "external",
+      "label": "计划任务 / PS 脚本",
+      "sublabel": "run_quant_agents / run_daily_research",
+      "tag": "隐藏·IgnoreNew·Limited",
+      "pos": [
+        40,
+        860
+      ],
+      "size": [
+        215,
+        72
+      ]
+    },
+    {
+      "id": "m5-cli",
+      "type": "backend",
+      "label": "CLI 入口",
+      "sublabel": "__main__.py · 27 子命令",
+      "tag": "health/run/release/forward",
+      "pos": [
+        315,
+        860
+      ],
+      "size": [
+        195,
+        72
+      ]
+    },
+    {
+      "id": "m5-config",
+      "type": "backend",
+      "label": "配置基线",
+      "sublabel": "config.Config.validate()",
+      "tag": "预算/定价/保留期",
+      "pos": [
+        315,
+        1100
+      ],
+      "size": [
+        195,
+        64
+      ]
+    },
+    {
+      "id": "m5-guard",
+      "type": "backend",
+      "label": "锁 · 幂等 · 恢复",
+      "sublabel": "RunLock / idempotency / recover",
+      "tag": "stale→interrupted",
+      "pos": [
+        575,
+        860
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "m5-source",
+      "type": "security",
+      "label": "源码基线门禁",
+      "sublabel": "source_baseline / source_review",
+      "tag": "clean commit/tag",
+      "pos": [
+        575,
+        1100
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "m5-preflight",
+      "type": "backend",
+      "label": "门禁预检编排",
+      "sublabel": "orchestrator.run_pipeline()",
+      "tag": "schema 7 硬顺序·失败留全审计",
+      "pos": [
+        845,
+        860
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "m5-dag",
+      "type": "backend",
+      "label": "7 Agent DAG",
+      "sublabel": "依赖失败阻断下游",
+      "tag": "失败不原地续跑",
+      "pos": [
+        1115,
+        860
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m5-budget",
+      "type": "backend",
+      "label": "预算与时限",
+      "sublabel": "evaluate_budget_gate()",
+      "tag": "≤2 USD/run · 2400s",
+      "pos": [
+        845,
+        1100
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "m5-opsdb",
+      "type": "database",
+      "label": "运行审计产物",
+      "sublabel": "events/metrics/alerts/manifest",
+      "tag": "append-only 事件链",
+      "pos": [
+        1115,
+        1100
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "m5-schedule",
+      "type": "backend",
+      "label": "调度输入与授权",
+      "sublabel": "build_scheduled_input()",
+      "tag": "authorization schema 3",
+      "pos": [
+        47.5,
+        1100
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "m2-tushare",
+      "type": "external",
+      "label": "Tushare Pro API",
+      "sublabel": "7 类数据接口",
+      "tag": "health 预检·须组织授权",
+      "pos": [
+        40,
+        1330
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "m2-client",
+      "type": "backend",
+      "label": "DataClient",
+      "sublabel": "data_client.DataClient()",
+      "tag": "缓存/重试/退避",
+      "pos": [
+        285,
+        1330
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "m2-cache",
+      "type": "database",
+      "label": "本地缓存",
+      "sublabel": ".cache/tushare",
+      "tag": "TTL 24h",
+      "pos": [
+        285,
+        1550
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "m2-pit",
+      "type": "backend",
+      "label": "点时成分选择",
+      "sublabel": "get_csi500_constituent_history()",
+      "tag": "历史快照≠当前成分",
+      "pos": [
+        525,
+        1330
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m2-quality",
+      "type": "backend",
+      "label": "数据质量门禁",
+      "sublabel": "coverage / freshness",
+      "tag": "GOOD≥90% 且≥40 日",
+      "pos": [
+        775,
+        1330
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "m2-snapshot",
+      "type": "database",
+      "label": "市场快照",
+      "sublabel": "market_data/ + 快照哈希",
+      "tag": "冻结后不可替换",
+      "pos": [
+        1015,
+        1330
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "m2-gov",
+      "type": "security",
+      "label": "数据授权门禁（模块 1）",
+      "sublabel": "evaluate_data_license()",
+      "tag": "未授权则阻断",
+      "pos": [
+        40,
+        1550
+      ],
+      "size": [
+        185,
+        64
+      ]
+    },
+    {
+      "id": "m2-rulebook",
+      "type": "database",
+      "label": "A 股规则簿",
+      "sublabel": "a_share_market_rules.json",
+      "tag": "有效期规则",
+      "pos": [
+        640,
+        1550
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "m2-rules",
+      "type": "backend",
+      "label": "市场规则引擎",
+      "sublabel": "calculate_trade_cost()",
+      "tag": "预检第 6 门·整手/T+1/费用",
+      "pos": [
+        880,
+        1550
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "m3-inputcheck",
+      "type": "security",
+      "label": "输入校验",
+      "sublabel": "validate_research_input()",
+      "tag": "执行/验证约束",
+      "pos": [
+        300,
+        1840
+      ],
+      "size": [
+        190,
+        68
+      ]
+    },
+    {
+      "id": "m3-signals",
+      "type": "backend",
+      "label": "动量信号",
+      "sublabel": "compute_latest_momentum_signals()",
+      "tag": "20 日+显式滞后",
+      "pos": [
+        300,
+        2000
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m3-engine",
+      "type": "backend",
+      "label": "逐订单回测引擎",
+      "sublabel": "run_momentum_backtest()",
+      "tag": "T+1/停牌/涨跌停",
+      "pos": [
+        540,
+        2000
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m3-metrics",
+      "type": "database",
+      "label": "权威绩效指标",
+      "sublabel": "收益/Sharpe/回撤/胜率",
+      "tag": "LLM 不可覆盖",
+      "pos": [
+        790,
+        2000
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m3-validation",
+      "type": "backend",
+      "label": "稳健性验证",
+      "sublabel": "run_robustness_validation()",
+      "tag": "holdout+3 折 WF+压力",
+      "pos": [
+        1030,
+        2000
+      ],
+      "size": [
+        165,
+        72
+      ]
+    },
+    {
+      "id": "m3-ledger",
+      "type": "database",
+      "label": "成本账本",
+      "sublabel": "backtest/cost_ledger.json",
+      "tag": "逐单对账",
+      "pos": [
+        660,
+        2220
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "m3-assurance",
+      "type": "security",
+      "label": "回测质量门禁",
+      "sublabel": "build_backtest_assurance()",
+      "tag": "PASSED_FOR_INTERNAL",
+      "pos": [
+        1010,
+        2220
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "m4-contracts",
+      "type": "security",
+      "label": "输出契约",
+      "sublabel": "validate_agent_output()",
+      "tag": "JSON+禁止资金语言",
+      "pos": [
+        290,
+        2480
+      ],
+      "size": [
+        200,
+        68
+      ]
+    },
+    {
+      "id": "m4-prompts",
+      "type": "database",
+      "label": "角色提示词",
+      "sublabel": "quant_agents/agents/",
+      "tag": "7 个 Pi role",
+      "pos": [
+        40,
+        2860
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "m4-base",
+      "type": "backend",
+      "label": "BaseAgent 双模式",
+      "sublabel": "run / execute_pi / mock_execute",
+      "tag": "dag 逐角色派发·1 次修复",
+      "pos": [
+        290,
+        2640
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "m4-pi",
+      "type": "backend",
+      "label": "PiClient",
+      "sublabel": "build_command / agent_turn_json",
+      "tag": "PI_CHILD_ENV_ALLOWLIST",
+      "pos": [
+        560,
+        2640
+      ],
+      "size": [
+        195,
+        72
+      ]
+    },
+    {
+      "id": "m4-policy",
+      "type": "security",
+      "label": "无工具安全策略",
+      "sublabel": "PI_SECURITY_FLAGS ×9",
+      "tag": "--no-tools --offline",
+      "pos": [
+        810,
+        2860
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "m4-picli",
+      "type": "external",
+      "label": "Pi CLI 0.84.2",
+      "sublabel": "本地 Node ≥22.19 子进程",
+      "pos": [
+        790,
+        2640
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "m4-deepseek",
+      "type": "external",
+      "label": "DeepSeek API",
+      "sublabel": "deepseek-v4-pro",
+      "tag": "唯一凭据 DEEPSEEK_API_KEY",
+      "pos": [
+        1010,
+        2640
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "m4-audit",
+      "type": "database",
+      "label": "认知审计产物",
+      "sublabel": "raw_outputs/ + pi_meta/",
+      "tag": "usage/response_id/prompt hash",
+      "pos": [
+        1018,
+        2860
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "m6-runs",
+      "type": "database",
+      "label": "已完成 run（模块 5 产物）",
+      "sublabel": "runs/<run-id>/",
+      "pos": [
+        40,
+        3280
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "m6-integrity",
+      "type": "backend",
+      "label": "完整性验证",
+      "sublabel": "verify_run_integrity()",
+      "tag": "manifest+事件链",
+      "pos": [
+        300,
+        3280
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m6-candidate",
+      "type": "backend",
+      "label": "发布候选",
+      "sublabel": "prepare_release_candidate()",
+      "tag": "绑定 manifest snapshot",
+      "pos": [
+        550,
+        3280
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m6-approval",
+      "type": "security",
+      "label": "五方审批",
+      "sublabel": "verify_release_approval()",
+      "tag": "五个独立角色",
+      "pos": [
+        800,
+        3280
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "m6-forward",
+      "type": "backend",
+      "label": "前向观察",
+      "sublabel": "initialize_campaign()",
+      "tag": "仓库外 campaign",
+      "pos": [
+        1045,
+        3280
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m6-weekly",
+      "type": "backend",
+      "label": "周报聚合",
+      "sublabel": "generate_weekly_report()",
+      "tag": "不替代单 run 证据",
+      "pos": [
+        45,
+        3520
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "m6-auditbase",
+      "type": "backend",
+      "label": "审计底座",
+      "sublabel": "build_file_manifest()",
+      "tag": "原子写/SHA-256",
+      "pos": [
+        300,
+        3520
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "m6-archive",
+      "type": "backend",
+      "label": "归档",
+      "sublabel": "archive_run()",
+      "tag": "ZIP+成员哈希+CRC",
+      "pos": [
+        515,
+        3520
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m6-restore",
+      "type": "backend",
+      "label": "恢复复验",
+      "sublabel": "verify_archive()",
+      "tag": "安全临时解压",
+      "pos": [
+        765,
+        3520
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "m6-obsdb",
+      "type": "database",
+      "label": "观察账本",
+      "sublabel": "observations.jsonl",
+      "tag": "前缀哈希防重写",
+      "pos": [
+        1045,
+        3520
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "m6-retention",
+      "type": "database",
+      "label": "保留计划",
+      "sublabel": "build_retention_plan()",
+      "tag": "365 天·legal hold",
+      "pos": [
+        755,
+        3700
+      ],
+      "size": [
+        210,
+        64
+      ]
+    },
+    {
+      "id": "m5-pyrt",
+      "type": "backend",
+      "label": "Python 运行时契约",
+      "sublabel": "python_runtime.inspect_python_runtime()",
+      "tag": "预检第一门·先于密钥扫描",
+      "pos": [
+        1460,
+        1100
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "m5-readiness",
+      "type": "backend",
+      "label": "项目就绪报告",
+      "sublabel": "readiness.build_project_readiness()",
+      "tag": "G0-G5 聚合",
+      "pos": [
+        1460,
+        1176
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "ops-runtime",
+      "type": "backend",
+      "label": "Pi 安装与验收工具",
+      "sublabel": "install_pi_runtime / check_pi / pi-acceptance",
+      "tag": "0.84.2 锁定·receipt SHA-256·付费 ping 可 --NoPing",
+      "pos": [
+        40,
+        3960
+      ],
+      "size": [
+        260,
+        80
+      ]
+    },
+    {
+      "id": "ops-verify",
+      "type": "backend",
+      "label": "验证与演练",
+      "sublabel": "verify_quant_pipeline / invoke_quant_drill",
+      "tag": "Mock E2E 必过·Mock 发布 exit 3·演练零生产修改",
+      "pos": [
+        360,
+        3960
+      ],
+      "size": [
+        240,
+        80
+      ]
+    },
+    {
+      "id": "ops-schedule",
+      "type": "security",
+      "label": "调度安装与漂移审计",
+      "sublabel": "install_quant_schedule / check_quant_schedule",
+      "tag": "schema 3·六重 SHA-256·Hidden·IgnoreNew·Limited",
+      "pos": [
+        660,
+        3960
+      ],
+      "size": [
+        260,
+        80
+      ]
+    },
+    {
+      "id": "ops-lifecycle",
+      "type": "backend",
+      "label": "归档/保留/周报封装",
+      "sublabel": "backup_quant_runs / plan_quant_retention / run_weekly_report",
+      "tag": "拒绝 Mock 归档·恢复复验·365 天 legal hold",
+      "pos": [
+        980,
+        3960
+      ],
+      "size": [
+        250,
+        80
+      ]
+    },
+    {
+      "id": "ops-env",
+      "type": "backend",
+      "label": "Python 环境与依赖锁",
+      "sublabel": "bootstrap_python / lock_python_dependencies / quant_python",
+      "tag": "CPython 3.11.x·--require-hashes·wheelhouse",
+      "pos": [
+        40,
+        4180
+      ],
+      "size": [
+        260,
+        80
+      ]
+    },
+    {
+      "id": "ops-legacy",
+      "type": "security",
+      "label": "遗留运行时清理",
+      "sublabel": "disable_legacy_openclaw",
+      "tag": "3 任务禁用·端口 18789/18790·不 kill 转人工",
+      "pos": [
+        360,
+        4180
+      ],
+      "size": [
+        250,
+        80
+      ]
+    },
+    {
+      "id": "gov-skills",
+      "type": "security",
+      "label": ".pi/skills 资产锁",
+      "sublabel": "pi_skills.lock.json · 5 skills / 12 文件哈希",
+      "tag": "--no-skills·review-adapt-hash-lock",
+      "pos": [
+        40,
+        4300
+      ],
+      "size": [
+        250,
+        80
+      ]
+    },
+    {
+      "id": "gov-extension",
+      "type": "security",
+      "label": "quant-ops-readonly 扩展",
+      "sublabel": ".pi/extensions · quant-status 只读命令",
+      "tag": "pi_extensions.lock·无写/无网/无子进程",
+      "pos": [
+        350,
+        4300
+      ],
+      "size": [
+        260,
+        80
+      ]
+    },
+    {
+      "id": "gov-piruntime",
+      "type": "external",
+      "label": "pi_runtime 锁定安装",
+      "sublabel": "@earendil-works/pi-coding-agent 0.84.2",
+      "tag": "package-lock·Node ≥22.19",
+      "pos": [
+        670,
+        4300
+      ],
+      "size": [
+        250,
+        80
+      ]
+    },
+    {
+      "id": "gov-evidencetpl",
+      "type": "database",
+      "label": "证据模板（仓库内）",
+      "sublabel": "5 × *.example.json · schema v1/v2",
+      "tag": "模板 ↔ 仓库外原件（模块 1）",
+      "pos": [
+        980,
+        4300
+      ],
+      "size": [
+        240,
+        80
+      ]
+    },
+    {
+      "id": "gov-upstream",
+      "type": "external",
+      "label": "上游参考目录",
+      "sublabel": "upstream_references.json · 10 项目决策",
+      "tag": "仅概念采用·未 vendor 代码",
+      "pos": [
+        1280,
+        4300
+      ],
+      "size": [
+        220,
+        80
+      ]
+    },
+    {
+      "id": "gov-tests",
+      "type": "backend",
+      "label": "确定性测试层",
+      "sublabel": "tests/ · 30 文件 · 172 用例",
+      "tag": "unittest discover·当前 20 失败/错误待修",
+      "pos": [
+        40,
+        4520
+      ],
+      "size": [
+        280,
+        80
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "模块 1 · 治理与证据（仓库内门禁代码）",
+      "wraps": [
+        "m1-scan",
+        "m1-license",
+        "m1-protocol",
+        "m1-registry",
+        "m1-cost"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "模块 5 · 运行控制（仓库内代码）",
+      "wraps": [
+        "m5-cli",
+        "m5-config",
+        "m5-guard",
+        "m5-source",
+        "m5-preflight",
+        "m5-dag",
+        "m5-budget",
+        "m5-schedule",
+        "m5-pyrt",
+        "m5-readiness"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "模块 2 · 数据层（仓库内代码）",
+      "wraps": [
+        "m2-client",
+        "m2-pit",
+        "m2-quality",
+        "m2-rules"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "模块 3 · 确定性研究（仓库内代码）",
+      "wraps": [
+        "m3-inputcheck",
+        "m3-signals",
+        "m3-engine",
+        "m3-validation",
+        "m3-assurance"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "模块 4 · Pi 认知层（仓库内资产 + 本地 runtime）",
+      "wraps": [
+        "m4-contracts",
+        "m4-prompts",
+        "m4-base",
+        "m4-pi",
+        "m4-policy",
+        "m4-picli"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "模块 6 · 发布与生命周期（仓库内代码）",
+      "wraps": [
+        "m6-integrity",
+        "m6-weekly",
+        "m6-auditbase",
+        "m6-candidate",
+        "m6-approval",
+        "m6-archive",
+        "m6-restore",
+        "m6-retention",
+        "m6-forward"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "运维工具层（operator-only · 不进入生产 Agent turn）",
+      "wraps": [
+        "ops-runtime",
+        "ops-verify",
+        "ops-schedule",
+        "ops-lifecycle",
+        "ops-env",
+        "ops-legacy"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "治理与资产层（SHA-256 锁定）",
+      "wraps": [
+        "gov-skills",
+        "gov-extension",
+        "gov-piruntime",
+        "gov-evidencetpl",
+        "gov-upstream",
+        "gov-tests"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "input-m1",
+      "from": "input-json",
+      "to": "m1-license",
+      "label": "冻结契约输入",
+      "fromSide": "right",
+      "toSide": "bottom",
+      "via": [
+        [
+          530,
+          516
+        ],
+        [
+          320,
+          516
+        ]
+      ]
+    },
+    {
+      "id": "ev-license",
+      "from": "m1-evidence",
+      "to": "m1-license",
+      "label": "v2 授权",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "ev-protocol",
+      "from": "m1-evidence",
+      "to": "m1-protocol",
+      "label": "v1 登记",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 82
+    },
+    {
+      "id": "ev-cost",
+      "from": "m1-evidence",
+      "to": "m1-cost",
+      "label": "v1 校准",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "scan-license",
+      "from": "m1-scan",
+      "to": "m1-license",
+      "label": "前置"
+    },
+    {
+      "id": "license-protocol",
+      "from": "m1-license",
+      "to": "m1-protocol"
+    },
+    {
+      "id": "protocol-registry",
+      "from": "m1-protocol",
+      "to": "m1-registry"
+    },
+    {
+      "id": "registry-cost",
+      "from": "m1-registry",
+      "to": "m1-cost"
+    },
+    {
+      "id": "registry-ledger",
+      "from": "m1-registry",
+      "to": "m1-ledger",
+      "label": "RESERVED / FINALIZED",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDx": 62
+    },
+    {
+      "id": "cost-preflight",
+      "from": "m1-cost",
+      "to": "m5-preflight",
+      "label": "门禁通过",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          965,
+          620
+        ],
+        [
+          945,
+          620
+        ]
+      ]
+    },
+    {
+      "id": "ledger-candidate",
+      "from": "m1-ledger",
+      "to": "m6-candidate",
+      "label": "发布前重读账本",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          825,
+          600
+        ],
+        [
+          1400,
+          600
+        ],
+        [
+          1400,
+          3100
+        ],
+        [
+          645,
+          3100
+        ]
+      ]
+    },
+    {
+      "id": "ps-cli",
+      "from": "m5-ps",
+      "to": "m5-cli",
+      "label": "真实运行"
+    },
+    {
+      "id": "cli-guard",
+      "from": "m5-cli",
+      "to": "m5-guard",
+      "label": "锁+幂等"
+    },
+    {
+      "id": "guard-preflight",
+      "from": "m5-guard",
+      "to": "m5-preflight"
+    },
+    {
+      "id": "preflight-dag",
+      "from": "m5-preflight",
+      "to": "m5-dag",
+      "label": "7 个 turn"
+    },
+    {
+      "id": "config-cli",
+      "from": "m5-config",
+      "to": "m5-cli",
+      "label": "配置基线",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "source-preflight",
+      "from": "m5-source",
+      "to": "m5-preflight",
+      "label": "clean source",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "budget-preflight",
+      "from": "m5-budget",
+      "to": "m5-preflight",
+      "label": "预算包络",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "dag-opsdb",
+      "from": "m5-dag",
+      "to": "m5-opsdb",
+      "label": "事件/告警",
+      "labelDy": 55
+    },
+    {
+      "id": "schedule-ps",
+      "from": "m5-schedule",
+      "to": "m5-ps",
+      "label": "冻结输入",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 64
+    },
+    {
+      "id": "dag-tushare",
+      "from": "m5-dag",
+      "to": "m2-tushare",
+      "label": "编排采集",
+      "fromSide": "right",
+      "toSide": "top",
+      "via": [
+        [
+          1360,
+          896
+        ],
+        [
+          1360,
+          1290
+        ],
+        [
+          132.5,
+          1290
+        ]
+      ]
+    },
+    {
+      "id": "opsdb-runs",
+      "from": "m5-opsdb",
+      "to": "m6-runs",
+      "label": "run 产物目录",
+      "fromSide": "right",
+      "toSide": "top",
+      "via": [
+        [
+          1440,
+          1132
+        ],
+        [
+          1440,
+          3200
+        ],
+        [
+          140,
+          3200
+        ]
+      ]
+    },
+    {
+      "id": "tushare-client",
+      "from": "m2-tushare",
+      "to": "m2-client",
+      "label": "7 类接口"
+    },
+    {
+      "id": "client-pit",
+      "from": "m2-client",
+      "to": "m2-pit",
+      "label": "行情/成分"
+    },
+    {
+      "id": "pit-quality",
+      "from": "m2-pit",
+      "to": "m2-quality",
+      "label": "覆盖统计"
+    },
+    {
+      "id": "quality-snapshot",
+      "from": "m2-quality",
+      "to": "m2-snapshot",
+      "label": "GOOD 冻结",
+      "labelDy": 55
+    },
+    {
+      "id": "client-cache",
+      "from": "m2-client",
+      "to": "m2-cache",
+      "label": "cache-first",
+      "labelDx": 100,
+      "labelDy": 55
+    },
+    {
+      "id": "gov-client",
+      "from": "m2-gov",
+      "to": "m2-client",
+      "label": "授权前置",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "rulebook-rules",
+      "from": "m2-rulebook",
+      "to": "m2-rules",
+      "label": "policy_for_date",
+      "labelDy": 60
+    },
+    {
+      "id": "snapshot-signals",
+      "from": "m2-snapshot",
+      "to": "m3-signals",
+      "label": "快照输入",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [
+        [
+          1105,
+          1770
+        ],
+        [
+          240,
+          1770
+        ],
+        [
+          240,
+          2036
+        ]
+      ]
+    },
+    {
+      "id": "rules-engine",
+      "from": "m2-rules",
+      "to": "m3-engine",
+      "label": "申报数量/费用",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          970,
+          1800
+        ],
+        [
+          635,
+          1800
+        ]
+      ]
+    },
+    {
+      "id": "inputcheck-signals",
+      "from": "m3-inputcheck",
+      "to": "m3-signals",
+      "label": "参数合法",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "signals-engine",
+      "from": "m3-signals",
+      "to": "m3-engine"
+    },
+    {
+      "id": "engine-metrics",
+      "from": "m3-engine",
+      "to": "m3-metrics",
+      "label": "权威指标"
+    },
+    {
+      "id": "metrics-validation",
+      "from": "m3-metrics",
+      "to": "m3-validation",
+      "label": "样本外划分",
+      "labelDy": 55
+    },
+    {
+      "id": "engine-ledger",
+      "from": "m3-engine",
+      "to": "m3-ledger",
+      "label": "逐订单成本",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "validation-assurance",
+      "from": "m3-validation",
+      "to": "m3-assurance",
+      "label": "通过判定",
+      "labelDx": 117.5,
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "metrics-base",
+      "from": "m3-metrics",
+      "to": "m4-base",
+      "label": "权威指标供解释",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [
+        [
+          885,
+          2400
+        ],
+        [
+          240,
+          2400
+        ],
+        [
+          240,
+          2676
+        ]
+      ]
+    },
+    {
+      "id": "contracts-base",
+      "from": "m4-contracts",
+      "to": "m4-base",
+      "label": "JSON 校验",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "prompts-base",
+      "from": "m4-prompts",
+      "to": "m4-base",
+      "label": "role 注入",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "base-pi",
+      "from": "m4-base",
+      "to": "m4-pi",
+      "label": "构建命令"
+    },
+    {
+      "id": "pi-picli",
+      "from": "m4-pi",
+      "to": "m4-picli",
+      "label": "spawn",
+      "labelDy": 55
+    },
+    {
+      "id": "picli-deepseek",
+      "from": "m4-picli",
+      "to": "m4-deepseek",
+      "label": "唯一外呼",
+      "variant": "emphasis",
+      "labelDy": 55
+    },
+    {
+      "id": "policy-pi",
+      "from": "m4-policy",
+      "to": "m4-pi",
+      "label": "环境隔离",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "pi-audit",
+      "from": "m4-pi",
+      "to": "m4-audit",
+      "label": "JSONL+元数据",
+      "fromSide": "top",
+      "toSide": "right",
+      "via": [
+        [
+          657.5,
+          2595
+        ],
+        [
+          1330,
+          2595
+        ],
+        [
+          1330,
+          2892
+        ]
+      ]
+    },
+    {
+      "id": "runs-integrity",
+      "from": "m6-runs",
+      "to": "m6-integrity"
+    },
+    {
+      "id": "integrity-candidate",
+      "from": "m6-integrity",
+      "to": "m6-candidate",
+      "label": "候选+审批请求",
+      "labelDy": 55
+    },
+    {
+      "id": "candidate-approval",
+      "from": "m6-candidate",
+      "to": "m6-approval"
+    },
+    {
+      "id": "approval-forward",
+      "from": "m6-approval",
+      "to": "m6-forward",
+      "label": "批准后",
+      "variant": "emphasis"
+    },
+    {
+      "id": "runs-weekly",
+      "from": "m6-runs",
+      "to": "m6-weekly",
+      "label": "聚合只读",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "auditbase-integrity",
+      "from": "m6-auditbase",
+      "to": "m6-integrity",
+      "label": "哈希底座",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 64
+    },
+    {
+      "id": "candidate-archive",
+      "from": "m6-candidate",
+      "to": "m6-archive",
+      "label": "归档发布物",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          645,
+          3450
+        ],
+        [
+          610,
+          3450
+        ]
+      ]
+    },
+    {
+      "id": "archive-restore",
+      "from": "m6-archive",
+      "to": "m6-restore"
+    },
+    {
+      "id": "restore-retention",
+      "from": "m6-restore",
+      "to": "m6-retention",
+      "label": "候选清单",
+      "labelDy": 55
+    },
+    {
+      "id": "forward-obsdb",
+      "from": "m6-forward",
+      "to": "m6-obsdb",
+      "label": "幂等追加",
+      "labelDy": 55
+    },
+    {
+      "id": "pyrt-preflight",
+      "from": "m5-pyrt",
+      "to": "m5-preflight",
+      "label": "第一门",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "opsdb-readiness",
+      "from": "m5-opsdb",
+      "to": "m5-readiness",
+      "label": "状态聚合",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [
+        [
+          1210,
+          1208
+        ]
+      ]
+    },
+    {
+      "id": "opslife-retention",
+      "from": "ops-lifecycle",
+      "to": "m6-retention",
+      "label": "封装调用",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "via": [
+        [
+          1105,
+          3880
+        ],
+        [
+          860,
+          3880
+        ]
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "权威边界",
+      "items": [
+        "Python 拥有数据/信号/绩效/门禁最终决定权",
+        "Pi 只做结构化解释，模型变更需契约回归"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "当前状态",
+      "items": [
+        "M1 受控软件候选：172 用例/30 文件，当前 20 失败/错误待修",
+        "商业 BLOCKED：待四类外部证据与 clean commit/tag"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "永久边界",
+      "items": [
+        "不接券商/订单/真实资金；Mock 永不发布",
+        "失败 run 全部保留；达阈值最多进独立验证"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "运维与治理资产",
+      "items": [
+        "19 个 .ps1 运维入口（安装/验收/验证/调度/环境/遗留）",
+        "5 skills + 1 extension SHA-256 锁定；10 上游参考决策",
+        "5 类证据模板 ↔ 仓库外原件；test 30 文件"
+      ]
+    }
+  ]
+}

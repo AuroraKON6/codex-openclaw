@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-09-15",
+  "timezone": "Asia/Shanghai",
+  "authority": "PLANNING_STATUS_ONLY_NOT_RELEASE_EVIDENCE",
+  "project": {
+    "name": "Governed Quant Research OS",
+    "workspace": "E:\\闲鱼\\codex openclaw",
+    "scope": "CSI500_INTERNAL_RESEARCH_ONLY",
+    "runtime": "pi",
+    "pi_version": "0.84.2",
+    "model": "deepseek-v4-pro"
+  },
+  "overall_status": "BLOCKED",
+  "current_maturity": "CONTROLLED_SOFTWARE",
+  "current_gate": "G0",
+  "budget_approval_status": "UNAPPROVED",
+  "gates": {
+    "G0_CONTINUE_DEVELOPMENT": "GO",
+    "G1_REAL_DATA_AND_MODEL": "NO_GO",
+    "G2_REAL_BASELINE": "NO_GO",
+    "G3_INTERNAL_RELEASE": "NO_GO",
+    "G4_FORWARD_SCHEDULE": "NO_GO",
+    "G5_SCALE_STRATEGIES_AND_AGENTS": "NO_GO"
+  },
+  "live_checks": {
+    "unit_tests": {
+      "status": "PASSED",
+      "command": ".\\.venv\\Scripts\\python.exe -m unittest discover -s tests",
+      "tests_run": 194,
+      "verified_on": "2026-09-15",
+      "note": "Runs in the locked project environment and includes Python runtime, source-candidate, packet/decision controls, readiness, scheduling, release, and date-stable operations contracts."
+    },
+    "full_local_regression": {
+      "status": "PASSED",
+      "command": "powershell -ExecutionPolicy Bypass -File .\\verify_quant_pipeline.ps1",
+      "mode": "MOCK",
+      "run_id": "20260915_013055_711",
+      "agents_completed": 7,
+      "agents_total": 7,
+      "manifest_files_checked": 27,
+      "event_count": 16,
+      "integrity_ok": true,
+      "release_candidate_status": "BLOCKED",
+      "release_blocker_count": 18,
+      "verified_on": "2026-09-15",
+      "python_runtime_contract_ok": true,
+      "note": "Mock evidence only; no Tushare, DeepSeek, paid Pi, broker, order, or real-capital action occurred."
+    },
+    "project_readiness": {
+      "status": "BLOCKED",
+      "command": ".\\quant.ps1 project-readiness --input .\\strategy_round.example.json",
+      "report_type": "OFFLINE_PROJECT_READINESS",
+      "checks_total": 14,
+      "checks_passed": 4,
+      "blocker_count": 10,
+      "ready_for_human_g1_review": false,
+      "phase_c_acceptance_complete": false,
+      "g1_authorized": false,
+      "real_run_authorized": false,
+      "network_calls_performed": false,
+      "paid_model_calls_performed": false,
+      "data_provider_calls_performed": false,
+      "pi_ping_performed": false,
+      "note": "Planning visibility only; all external evidence and human approvals remain authoritative."
+    },
+    "source_secret_scan": {
+      "status": "PASSED",
+      "rules_version": "2026-08-29.1",
+      "candidate_file_count": 174,
+      "finding_count": 7,
+      "unreviewed_finding_count": 0,
+      "receipt_path": ".cache/secret-scan/receipt.json",
+      "verified_on": "2026-09-15",
+      "note": "The ignored external receipt is authoritative and must match the current candidate tree."
+    },
+    "source_candidate_manifest": {
+      "status": "READY_FOR_HUMAN_FILE_REVIEW_NOT_AUTHORIZED",
+      "command": ".\\quant.ps1 source-candidate --require-reviewable",
+      "candidate_file_count": 174,
+      "candidate_total_bytes": 7429519,
+      "machine_blocker_count": 0,
+      "human_review_flag_count": 9,
+      "source_baseline_authorized": false,
+      "git_write_actions_performed": false,
+      "verified_on": "2026-09-15",
+      "note": "Machine reviewability does not authorize staging, commit, tag, remote, real run, or release."
+    },
+    "source_review_packet": {
+      "status": "CAPABILITY_PASSED_AWAITING_HUMAN_REVIEW",
+      "command": ".\\quant.ps1 source-review-packet",
+      "verification_command": ".\\quant.ps1 source-review-verify --packet-dir <DIR>",
+      "verification_status": "VERIFIED_AWAITING_HUMAN_FILE_REVIEW_NOT_AUTHORIZED",
+      "output_root": ".cache/source-baseline/review-packets",
+      "immutable_machine_files": 5,
+      "hash_bound_artifacts": 4,
+      "application_hash_only_not_signature": true,
+      "platform_and_security_review_required": true,
+      "organization_identity_verified": false,
+      "source_baseline_authorized": false,
+      "git_write_actions_performed": false,
+      "verified_on": "2026-09-15",
+      "note": "The packet is a hash-bound handoff aid; it cannot authenticate reviewers or approve the private baseline."
+    },
+    "source_review_decision": {
+      "status": "BLOCKED_OR_INVALID",
+      "command": ".\\quant.ps1 source-review-decision-verify --packet-dir <DIR> --decision <EXTERNAL_DECISION> --secret-receipt .\\.cache\\secret-scan\\receipt.json",
+      "review_claim_valid": false,
+      "organization_identity_verified": false,
+      "private_baseline_execution_authorized": false,
+      "source_baseline_authorized": false,
+      "g1_authorized": false,
+      "real_run_authorized": false,
+      "verified_on": "2026-09-15",
+      "note": "No external completed Platform/Security decision record is configured; a blank template is not evidence and cannot authorize Git or G1."
+    },
+    "python_runtime": {
+      "status": "PASSED",
+      "command": ".\\quant.ps1 python-runtime --require-ready",
+      "target": "windows-cpython-3.11-project-venv",
+      "python_version": "3.11.9",
+      "requirements_lock_sha256": "0adf8738c252fe5649b272088554ff8fdf63076e2b39a881097752460476abea",
+      "locked_package_count": 32,
+      "package_mismatch_count": 0,
+      "unexpected_runtime_distribution_count": 0,
+      "user_site_enabled": false,
+      "verified_on": "2026-09-15",
+      "note": "pip and setuptools are allowed bootstrap distributions; this is local reproducibility evidence, not business authorization."
+    },
+    "pi_no_ping": {
+      "status": "PASSED",
+      "command": "powershell -ExecutionPolicy Bypass -File .\\check_pi.ps1 -NoPing",
+      "paid_provider_call_performed": false,
+      "all_tools_disabled": true,
+      "python_runtime_contract_ok": true,
+      "verified_on": "2026-09-04"
+    },
+    "source": {
+      "status": "BLOCKED",
+      "head_exists": false,
+      "tracked_files": 0,
+      "remote_lines": 0,
+      "top_level_untracked_entries": 37,
+      "untracked_candidate_files": 174,
+      "note": "This count is a live workspace snapshot, not a source baseline."
+    },
+    "external_evidence": {
+      "data_license_path_set": false,
+      "research_protocol_path_set": false,
+      "experiment_registry_path_set": false,
+      "execution_cost_path_set": false
+    },
+    "data": {
+      "tushare_token_set": false,
+      "current_schema_7_real_acceptance": false
+    },
+    "legacy_openclaw": {
+      "scheduled_tasks_found": 3,
+      "scheduled_tasks_disabled": 3,
+      "listeners_on_18789_or_18790": 0,
+      "gateway_processes": 0,
+      "verified_on": "2026-09-04"
+    }
+  },
+  "work_packages": [
+    {
+      "id": "WP-01",
+      "name": "P0 engineering verification",
+      "status": "DONE_CURRENT_PASS",
+      "owner_role": "PLATFORM"
+    },
+    {
+      "id": "WP-02",
+      "name": "Private source baseline",
+      "status": "OPEN_EXTERNAL_REVIEW_AND_BASELINE",
+      "owner_role": "PLATFORM_SECURITY",
+      "blocker": "NO_EXTERNAL_DUAL_REVIEW_OR_COMMITTED_HEAD_OR_REMOTE"
+    },
+    {
+      "id": "WP-03",
+      "name": "Organizational data rights",
+      "status": "OPEN",
+      "owner_role": "DATA_COMPLIANCE",
+      "blocker": "NO_SIGNED_ORGANIZATIONAL_EVIDENCE"
+    },
+    {
+      "id": "WP-04",
+      "name": "Externally registered research protocol",
+      "status": "OPEN",
+      "owner_role": "QUANT_VALIDATOR_COMPLIANCE",
+      "blocker": "NO_EXTERNAL_REGISTRATION"
+    },
+    {
+      "id": "WP-05",
+      "name": "Approved experiment registry",
+      "status": "OPEN",
+      "owner_role": "PLATFORM_COMPLIANCE",
+      "blocker": "NO_ORGANIZATION_APPROVED_REGISTRY"
+    },
+    {
+      "id": "WP-06",
+      "name": "Execution cost evidence",
+      "status": "OPEN",
+      "owner_role": "QUANT_COST_REVIEWER_COMPLIANCE",
+      "blocker": "NO_INSTITUTIONAL_MATERIALS_OR_APPROVAL"
+    },
+    {
+      "id": "WP-07",
+      "name": "Current runtime and data acceptance",
+      "status": "BLOCKED",
+      "owner_role": "MODEL_PLATFORM_DATA",
+      "depends_on": [
+        "WP-02",
+        "WP-03",
+        "WP-04",
+        "WP-05",
+        "WP-06"
+      ]
+    },
+    {
+      "id": "WP-08",
+      "name": "First real baseline",
+      "status": "BLOCKED",
+      "owner_role": "QUANT_PLATFORM",
+      "depends_on": [
+        "WP-07"
+      ]
+    },
+    {
+      "id": "WP-09",
+      "name": "Release and archive",
+      "status": "BLOCKED",
+      "owner_role": "FIVE_ROLE_COMMITTEE",
+      "depends_on": [
+        "WP-08"
+      ]
+    },
+    {
+      "id": "WP-10",
+      "name": "Forward campaign",
+      "status": "BLOCKED",
+      "owner_role": "MODEL_VALIDATOR_PLATFORM",
+      "depends_on": [
+        "WP-09"
+      ]
+    },
+    {
+      "id": "WP-11",
+      "name": "Research factory",
+      "status": "DEFERRED",
+      "owner_role": "ARCHITECTURE",
+      "depends_on": [
+        "THREE_AUTHORIZED_CYCLES"
+      ]
+    },
+    {
+      "id": "WP-12",
+      "name": "Organization-scale platform",
+      "status": "DEFERRED",
+      "owner_role": "GM_PLATFORM",
+      "depends_on": [
+        "WP-11"
+      ]
+    }
+  ],
+  "role_assignments": {
+    "GM_PRODUCT_OWNER": "UNASSIGNED",
+    "QUANT_OWNER": "UNASSIGNED",
+    "INDEPENDENT_VALIDATOR": "UNASSIGNED",
+    "DATA_OWNER": "UNASSIGNED",
+    "PLATFORM_SRE": "UNASSIGNED",
+    "MODEL_AI_OWNER": "UNASSIGNED",
+    "COMPLIANCE_LEGAL": "UNASSIGNED",
+    "COST_REVIEWER": "UNASSIGNED",
+    "SECURITY_IT": "UNASSIGNED"
+  },
+  "next_actions": [
+    "ASSIGN_REAL_ORGANIZATION_ROLES",
+    "COMPLETE_PLATFORM_SECURITY_PER_FILE_SOURCE_REVIEW",
+    "ESTABLISH_PRIVATE_SOURCE_BASELINE",
+    "OBTAIN_ORGANIZATIONAL_DATA_AUTHORIZATION",
+    "REGISTER_FROZEN_RESEARCH_PROTOCOL_EXTERNALLY",
+    "ACTIVATE_APPROVED_EXPERIMENT_REGISTRY",
+    "APPROVE_EXECUTION_COST_EVIDENCE",
+    "APPROVE_PAID_RUNTIME_AND_DATA_ACCEPTANCE_BUDGET",
+    "HOLD_G1_DECISION_MEETING"
+  ],
+  "prohibitions": [
+    "NO_BROKER_CONNECTION",
+    "NO_ORDER_ROUTING",
+    "NO_REAL_MONEY_MANAGEMENT",
+    "NO_REAL_MONEY_TRADING_ADVICE",
+    "NO_UNAUTHORIZED_EXTERNAL_CALLS",
+    "NO_SILENT_RUNTIME_OR_PROVIDER_FALLBACK",
+    "NO_PRODUCTION_PI_TOOLS_SKILLS_OR_EXTENSIONS",
+    "NO_MOCK_AS_REAL_EVIDENCE",
+    "NO_LOCAL_JSON_AS_ORGANIZATION_APPROVAL"
+  ],
+  "evidence_authority": {
+    "source": "GIT_AND_SOURCE_PROVENANCE",
+    "business_authorization": "EXTERNAL_ORGANIZATION_RECORDS",
+    "experiments": "EXTERNAL_EXPERIMENT_REGISTRY",
+    "runs": "RUN_STATE_MANIFEST_AND_EVENT_CHAIN",
+    "release": "IDENTITY_APPROVAL_ARCHIVE_AND_RESTORE",
+    "forward": "EXTERNAL_APPEND_ONLY_CAMPAIGN",
+    "note": "This file cannot approve or release any research artifact."
+  }
+}

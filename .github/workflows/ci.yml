@@ -1,0 +1,58 @@
+# Zero-paid-call CI: software regression only.
+#
+# This workflow never calls the LLM provider, never requests market data, and
+# never installs the production schedule. Paid or licensed acceptance (real
+# Pi ping, Agent contract acceptance, Tushare E2E, real runs) stays a
+# human-approved local operation — see docs/adr/ADR-0003, ADR-0004, and the
+# deployment handoff. tests/test_ops_contract.py locks this file to that
+# contract.
+name: quant-software-regression
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  regression:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      PYTHONIOENCODING: utf-8
+      PYTHONUTF8: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Use approved CPython 3.11.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create project venv (same contract as quant_python.ps1)
+        run: |
+          python -m venv .venv
+          .venv\Scripts\python.exe -m pip install -r requirements.txt
+
+      - name: Full offline software verification
+        # py_compile + secret-scan + source-candidate + PowerShell AST parse
+        # + unittest suite + Mock E2E + integrity + Mock release block.
+        # No network beyond PyPI for the locked requirements; no provider or
+        # market-data credentials exist in this environment.
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File .\verify_quant_pipeline.ps1
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-diagnostics
+          path: |
+            runs/**/state.json
+            runs/**/operations/alerts.json
+          if-no-files-found: ignore
+          retention-days: 7

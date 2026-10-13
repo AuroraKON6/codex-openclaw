@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "总装 · Governed Quant Research OS（六模块拼装）",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "gate-first",
+        "label": "先门禁后调用",
+        "focus": [
+          "input",
+          "m1",
+          "m5"
+        ],
+        "note": "任何外部调用前，治理与证据层按硬顺序拦截。"
+      },
+      {
+        "id": "research-chain",
+        "label": "数据→研究→认知",
+        "focus": [
+          "m2",
+          "m3",
+          "m4",
+          "m5"
+        ],
+        "note": "Python 拥有权威计算，Pi 只做无工具结构化解释。"
+      },
+      {
+        "id": "lifecycle",
+        "label": "产物与生命周期",
+        "focus": [
+          "m5",
+          "m6",
+          "artifacts",
+          "evidence"
+        ],
+        "note": "run 产物→完整性→五方审批→归档→前向账本。"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "input",
+      "type": "external",
+      "label": "研究输入",
+      "sublabel": "strategy_round.example.json",
+      "tag": "冻结契约",
+      "pos": [
+        40,
+        180
+      ],
+      "size": [
+        250,
+        72
+      ]
+    },
+    {
+      "id": "m1",
+      "type": "security",
+      "label": "模块 1 · 治理与证据",
+      "sublabel": "license/protocol/registry/cost/secret",
+      "pos": [
+        350,
+        180
+      ],
+      "size": [
+        215,
+        72
+      ]
+    },
+    {
+      "id": "m5",
+      "type": "backend",
+      "label": "模块 5 · 运行控制",
+      "sublabel": "orchestrator/operations/schedule",
+      "tag": "schema 7",
+      "pos": [
+        615,
+        180
+      ],
+      "size": [
+        195,
+        72
+      ]
+    },
+    {
+      "id": "m6",
+      "type": "backend",
+      "label": "模块 6 · 发布与生命周期",
+      "sublabel": "release/archive/forward·重读外账",
+      "pos": [
+        870,
+        180
+      ],
+      "size": [
+        215,
+        72
+      ]
+    },
+    {
+      "id": "artifacts",
+      "type": "database",
+      "label": "run 审计产物",
+      "sublabel": "runs/<run-id> · manifest/事件链",
+      "pos": [
+        1125,
+        180
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "evidence",
+      "type": "external",
+      "label": "仓库外证据与账本",
+      "sublabel": "license/protocol/cost/registry/campaign",
+      "pos": [
+        347.5,
+        420
+      ],
+      "size": [
+        220,
+        72
+      ]
+    },
+    {
+      "id": "m2",
+      "type": "backend",
+      "label": "模块 2 · 数据层",
+      "sublabel": "Tushare adapter/点时/规则簿",
+      "pos": [
+        615,
+        420
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "m3",
+      "type": "backend",
+      "label": "模块 3 · 确定性研究",
+      "sublabel": "信号/回测/稳健性/成本账本",
+      "pos": [
+        870,
+        420
+      ],
+      "size": [
+        200,
+        72
+      ]
+    },
+    {
+      "id": "m4",
+      "type": "backend",
+      "label": "模块 4 · Pi 认知层",
+      "sublabel": "7 Agent no-tools JSON turns",
+      "pos": [
+        1125,
+        420
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "tushare",
+      "type": "external",
+      "label": "Tushare Pro",
+      "sublabel": "7 类接口·组织授权",
+      "pos": [
+        615,
+        650
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "deepseek",
+      "type": "external",
+      "label": "DeepSeek API",
+      "sublabel": "deepseek-v4-pro",
+      "pos": [
+        1125,
+        650
+      ],
+      "size": [
+        185,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "仓库内 · Governed Quant Research OS",
+      "wraps": [
+        "m1",
+        "m5",
+        "m6",
+        "artifacts",
+        "m2",
+        "m3",
+        "m4"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "input-m1",
+      "from": "input",
+      "to": "m1",
+      "label": "冻结契约"
+    },
+    {
+      "id": "m1-m5",
+      "from": "m1",
+      "to": "m5",
+      "label": "硬门禁"
+    },
+    {
+      "id": "m5-m6",
+      "from": "m5",
+      "to": "m6",
+      "label": "run 产物"
+    },
+    {
+      "id": "m6-artifacts",
+      "from": "m6",
+      "to": "artifacts",
+      "label": "复验归档",
+      "labelDy": 55
+    },
+    {
+      "id": "m1-evidence",
+      "from": "m1",
+      "to": "evidence",
+      "label": "哈希绑定",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "m5-m2",
+      "from": "m5",
+      "to": "m2",
+      "label": "编排采集",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 128
+    },
+    {
+      "id": "m2-m3",
+      "from": "m2",
+      "to": "m3",
+      "label": "点时快照"
+    },
+    {
+      "id": "m3-m4",
+      "from": "m3",
+      "to": "m4",
+      "label": "指标解释"
+    },
+    {
+      "id": "m5-m4",
+      "from": "m5",
+      "to": "m4",
+      "label": "无工具编排",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "m2-tushare",
+      "from": "m2",
+      "to": "tushare",
+      "label": "7 类接口",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    },
+    {
+      "id": "m4-deepseek",
+      "from": "m4",
+      "to": "deepseek",
+      "label": "唯一外呼",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 55
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "权威边界",
+      "items": [
+        "Python 拥有数据/信号/绩效/门禁最终决定权",
+        "Pi 只做结构化解释，任何模型变更需契约回归"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "当前状态",
+      "items": [
+        "M1 受控软件候选：133/133 测试、Mock E2E 通过",
+        "商业 BLOCKED：待四类外部证据与 clean commit/tag"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "永久边界",
+      "items": [
+        "不接券商/订单/真实资金；Mock 永不发布",
+        "失败 run 全部保留，达阈值最多进独立验证"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "模块 2 · 数据层（Tushare 点时数据 + 规则簿）",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "tushare",
+      "type": "external",
+      "label": "Tushare Pro API",
+      "sublabel": "7 类数据接口",
+      "tag": "须组织商业授权",
+      "pos": [
+        40,
+        190
+      ],
+      "size": [
+        185,
+        72
+      ]
+    },
+    {
+      "id": "client",
+      "type": "backend",
+      "label": "DataClient",
+      "sublabel": "data_client.DataClient()",
+      "tag": "缓存/重试/退避",
+      "pos": [
+        285,
+        190
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "cache",
+      "type": "database",
+      "label": "本地缓存",
+      "sublabel": ".cache/tushare",
+      "tag": "TTL 24h",
+      "pos": [
+        285,
+        410
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "pit",
+      "type": "backend",
+      "label": "点时成分选择",
+      "sublabel": "get_csi500_constituent_history()",
+      "tag": "历史快照≠当前成分",
+      "pos": [
+        525,
+        190
+      ],
+      "size": [
+        190,
+        72
+      ]
+    },
+    {
+      "id": "quality",
+      "type": "backend",
+      "label": "数据质量门禁",
+      "sublabel": "coverage / freshness",
+      "tag": "GOOD≥90% 且≥40 日",
+      "pos": [
+        775,
+        190
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "snapshot",
+      "type": "database",
+      "label": "市场快照",
+      "sublabel": "market_data/ + 快照哈希",
+      "tag": "冻结后不可替换",
+      "pos": [
+        1015,
+        190
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "gov",
+      "type": "security",
+      "label": "数据授权门禁（模块 1）",
+      "sublabel": "evaluate_data_license()",
+      "tag": "未授权则阻断",
+      "pos": [
+        40,
+        410
+      ],
+      "size": [
+        185,
+        64
+      ]
+    },
+    {
+      "id": "rulebook",
+      "type": "database",
+      "label": "A 股规则簿",
+      "sublabel": "a_share_market_rules.json",
+      "tag": "有效期规则",
+      "pos": [
+        640,
+        410
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "rules",
+      "type": "backend",
+      "label": "市场规则引擎",
+      "sublabel": "calculate_trade_cost()",
+      "tag": "整手/T+1/费用",
+      "pos": [
+        880,
+        410
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "downstream",
+      "type": "backend",
+      "label": "确定性研究层（模块 3）",
+      "sublabel": "research_engine 输入",
+      "pos": [
+        640,
+        600
+      ],
+      "size": [
+        200,
+        72
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "quant_agents 数据层（仓库内代码）",
+      "wraps": [
+        "client",
+        "pit",
+        "quality",
+        "rules"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "tushare-client",
+      "from": "tushare",
+      "to": "client",
+      "label": "7 类接口"
+    },
+    {
+      "id": "client-pit",
+      "from": "client",
+      "to": "pit",
+      "label": "行情/成分"
+    },
+    {
+      "id": "pit-quality",
+      "from": "pit",
+      "to": "quality",
+      "label": "覆盖统计"
+    },
+    {
+      "id": "quality-snapshot",
+      "from": "quality",
+      "to": "snapshot",
+      "label": "GOOD 冻结",
+      "labelDy": 55
+    },
+    {
+      "id": "client-cache",
+      "from": "client",
+      "to": "cache",
+      "label": "cache-first",
+      "labelDx": 100,
+      "labelDy": 55
+    },
+    {
+      "id": "gov-client",
+      "from": "gov",
+      "to": "client",
+      "label": "授权前置",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "rulebook-rules",
+      "from": "rulebook",
+      "to": "rules",
+      "label": "policy_for_date",
+      "labelDy": 60
+    },
+    {
+      "id": "rules-downstream",
+      "from": "rules",
+      "to": "downstream",
+      "label": "整手/费用",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          970,
+          540
+        ],
+        [
+          740,
+          540
+        ]
+      ]
+    },
+    {
+      "id": "snapshot-downstream",
+      "from": "snapshot",
+      "to": "downstream",
+      "label": "点时输入",
+      "fromSide": "bottom",
+      "toSide": "right",
+      "via": [
+        [
+          1105,
+          565
+        ],
+        [
+          890,
+          565
+        ],
+        [
+          890,
+          636
+        ]
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "点时纪律",
+      "items": [
+        "成分按历史快照选取，禁止当前成分覆盖历史",
+        "momentum lookback 配 warmup 区间，避免前视"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "质量门禁",
+      "items": [
+        "coverage≥90% 且≥40 交易日评为 GOOD",
+        "研究输入默认要求 GOOD + freshness lag 0"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "授权前置",
+      "items": [
+        "无组织授权或无 Token 时不允许真实数据 run",
+        "公开个人非商业条款不构成组织研究授权"
+      ]
+    }
+  ]
+}

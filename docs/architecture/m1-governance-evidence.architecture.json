@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "模块 1 · 治理与证据层（Governance & Evidence）",
+    "locale": "zh-CN",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "evidence",
+      "type": "external",
+      "label": "仓库外证据原件",
+      "sublabel": "license / protocol / cost / registry",
+      "tag": "SHA-256 绑定",
+      "pos": [
+        400,
+        40
+      ],
+      "size": [
+        260,
+        68
+      ]
+    },
+    {
+      "id": "scan",
+      "type": "security",
+      "label": "密钥扫描门禁",
+      "sublabel": "evaluate_secret_scan_receipt()",
+      "tag": "source gate 回执",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        150,
+        72
+      ]
+    },
+    {
+      "id": "license",
+      "type": "security",
+      "label": "数据授权门禁",
+      "sublabel": "evaluate_data_license()",
+      "tag": "v2 组织书面授权",
+      "pos": [
+        240,
+        220
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "protocol",
+      "type": "security",
+      "label": "研究协议门禁",
+      "sublabel": "evaluate_research_protocol()",
+      "tag": "v1 精确输入绑定",
+      "pos": [
+        450,
+        220
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "registry",
+      "type": "security",
+      "label": "实验 Registry 门禁",
+      "sublabel": "verify_experiment_registry_gate()",
+      "tag": "RESERVED 先于调用",
+      "pos": [
+        660,
+        220
+      ],
+      "size": [
+        170,
+        72
+      ]
+    },
+    {
+      "id": "cost",
+      "type": "security",
+      "label": "执行成本门禁",
+      "sublabel": "evaluate_execution_cost_evidence()",
+      "tag": "材料哈希+独立复核",
+      "pos": [
+        880,
+        220
+      ],
+      "size": [
+        170,
+        72
+      ]
+    },
+    {
+      "id": "preflight",
+      "type": "backend",
+      "label": "run 前置预检",
+      "sublabel": "orchestrator.run_pipeline()",
+      "tag": "schema 7 硬顺序",
+      "pos": [
+        230,
+        480
+      ],
+      "size": [
+        175,
+        72
+      ]
+    },
+    {
+      "id": "release",
+      "type": "backend",
+      "label": "发布门禁",
+      "sublabel": "prepare_release_candidate()",
+      "tag": "is_release_eligible_* 复验",
+      "pos": [
+        475,
+        480
+      ],
+      "size": [
+        175,
+        72
+      ]
+    },
+    {
+      "id": "ledger",
+      "type": "database",
+      "label": "外部实验账本",
+      "sublabel": "registry.json + experiments.jsonl",
+      "tag": "追加式哈希链",
+      "pos": [
+        735,
+        480
+      ],
+      "size": [
+        180,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "quant_agents 治理门禁（仓库内代码）",
+      "wraps": [
+        "scan",
+        "license",
+        "protocol",
+        "registry",
+        "cost",
+        "preflight",
+        "release"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ev-license",
+      "from": "evidence",
+      "to": "license",
+      "label": "v2 授权",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "ev-protocol",
+      "from": "evidence",
+      "to": "protocol",
+      "label": "v1 登记",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 82
+    },
+    {
+      "id": "ev-cost",
+      "from": "evidence",
+      "to": "cost",
+      "label": "v1 校准",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "scan-license",
+      "from": "scan",
+      "to": "license",
+      "label": "前置"
+    },
+    {
+      "id": "license-protocol",
+      "from": "license",
+      "to": "protocol"
+    },
+    {
+      "id": "protocol-registry",
+      "from": "protocol",
+      "to": "registry"
+    },
+    {
+      "id": "registry-cost",
+      "from": "registry",
+      "to": "cost"
+    },
+    {
+      "id": "cost-preflight",
+      "from": "cost",
+      "to": "preflight",
+      "label": "通过后",
+      "fromSide": "bottom",
+      "toSide": "bottom",
+      "via": [
+        [
+          965,
+          660
+        ],
+        [
+          317.5,
+          660
+        ]
+      ]
+    },
+    {
+      "id": "registry-ledger",
+      "from": "registry",
+      "to": "ledger",
+      "label": "RESERVED / FINALIZED",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDx": 62
+    },
+    {
+      "id": "preflight-release",
+      "from": "preflight",
+      "to": "release",
+      "label": "run 产物"
+    },
+    {
+      "id": "ledger-release",
+      "from": "ledger",
+      "to": "release",
+      "label": "发布前重读账本",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "right",
+      "labelDy": 46
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "硬顺序",
+      "items": [
+        "source → license → protocol → registry → cost 依次校验",
+        "任一门禁失败立即 preflight_failed，保留完整失败审计"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "证据边界",
+      "items": [
+        "四类证据与实验账本必须存放于仓库外",
+        "哈希只证明内容一致，不证明签署人身份"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "恒定边界",
+      "items": [
+        "broker_connection_enabled=false 恒定",
+        "external_distribution_approved=false 恒定"
+      ]
+    }
+  ]
+}

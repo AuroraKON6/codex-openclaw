@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "APPROVED_FOR_BACKTEST",
+  "protocol_id": "REPLACE_WITH_ORGANIZATION_PROTOCOL_ID",
+  "protocol_version": 1,
+  "change_type": "initial_registration",
+  "supersedes_protocol_id": "",
+  "change_reason": "",
+  "scope": "CSI500",
+  "hypothesis_id": "csi500-cross-sectional-momentum-v1",
+  "parameter_selection_policy": "pre_registered_no_search",
+  "parameter_search_count": 0,
+  "registered_input_sha256": "3b90b1ba932db99cab63faed20747991b986d6444499d9207e66f8638447bc22",
+  "model_contract_sha256": "92ea59c922404b5856f2f5a02e2380d9e0ad472d92d8146eef37b874f49275bc",
+  "registered_date_range": {
+    "since": "20250101",
+    "until": "20250530"
+  },
+  "registered_at": "REPLACE_WITH_TIMEZONE_AWARE_REGISTRATION_TIMESTAMP",
+  "reviewed_at": "REPLACE_WITH_YYYY-MM-DD",
+  "valid_from": "REPLACE_WITH_YYYY-MM-DD",
+  "valid_until": "REPLACE_WITH_YYYY-MM-DD",
+  "registered_before_execution_attested": true,
+  "live_execution_authorized": false,
+  "external_distribution_authorized": false,
+  "system_of_record": {
+    "type": "organization_research_registry_export",
+    "record_id": "REPLACE_WITH_IMMUTABLE_RECORD_ID",
+    "record_reference": "REPLACE_WITH_ORGANIZATION_SYSTEM_REFERENCE"
+  },
+  "approvals": [
+    {
+      "role": "quant_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_QUANT_OWNER",
+      "approved_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+      "evidence_reference": "REPLACE_WITH_APPROVAL_REFERENCE"
+    },
+    {
+      "role": "independent_model_validator",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_INDEPENDENT_VALIDATOR",
+      "approved_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+      "evidence_reference": "REPLACE_WITH_APPROVAL_REFERENCE"
+    },
+    {
+      "role": "compliance_owner",
+      "decision": "APPROVED",
+      "approver": "REPLACE_WITH_NAMED_COMPLIANCE_OWNER",
+      "approved_at": "REPLACE_WITH_TIMEZONE_AWARE_TIMESTAMP",
+      "evidence_reference": "REPLACE_WITH_APPROVAL_REFERENCE"
+    }
+  ],
+  "forward_observation_controls": {
+    "authorized": true,
+    "observation_mode": "fixed_origin_forward",
+    "warmup_since": "20250101",
+    "baseline_cutoff": "20250530",
+    "minimum_observation_trade_days": 60,
+    "minimum_rebalance_count": 3,
+    "review_frequency_trade_days": 5,
+    "promotion_thresholds": {
+      "minimum_excess_return": 0.0,
+      "maximum_drawdown": -0.25,
+      "maximum_cumulative_cost_ratio": 0.05
+    },
+    "pause_thresholds": {
+      "drawdown_at_or_below": -0.35,
+      "excess_return_at_or_below": -0.2
+    }
+  },
+  "supporting_document_type": "organization_research_registry_export",
+  "supporting_document_path": "REPLACE_WITH_EXTERNAL_ABSOLUTE_PATH",
+  "supporting_document_sha256": "REPLACE_WITH_LOWERCASE_SHA256",
+  "limitations": [
+    "Local validation binds the external record by hash but cannot authenticate organizational identities or the registry timestamp."
+  ]
+}

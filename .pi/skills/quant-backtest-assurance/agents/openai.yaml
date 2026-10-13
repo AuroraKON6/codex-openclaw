@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quant Backtest Assurance"
+  short_description: "Validate CSI 500 backtest realism and bias controls"
+  default_prompt: "Review this CSI 500 backtest as an auditable research experiment without trading advice."
