@@ -15,7 +15,10 @@ from __future__ import annotations
 
 import re
 import sys
+from datetime import datetime, timedelta
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -93,6 +96,27 @@ class NoPaidCallsByDefaultContract(unittest.TestCase):
         ):
             self.assertIn(required, verify_body)
 
+    def test_weekly_without_dates_uses_the_last_seven_days(self):
+        sys.path.insert(0, str(PROJECT_ROOT / "tools"))
+        self.addCleanup(sys.path.pop, 0)
+        import quant_ops
+
+        recorded = {}
+        def fake_run_python(args, **_):
+            recorded["args"] = args
+            return SimpleNamespace(returncode=0)
+
+        with patch.object(quant_ops, "load_env_file", return_value=False), patch.object(
+            quant_ops, "run_python", side_effect=fake_run_python
+        ):
+            exit_code = quant_ops.cmd_weekly(["--mock"])
+        self.assertEqual(exit_code, 0)
+        args = recorded["args"]
+        today = datetime.now()
+        self.assertEqual(args[args.index("--since") + 1], (today - timedelta(days=7)).strftime("%Y%m%d"))
+        self.assertEqual(args[args.index("--until") + 1], today.strftime("%Y%m%d"))
+        self.assertIn("--mock", args)
+
     def test_run_never_falls_back_to_mock(self):
         text = _read("tools/quant_ops.py")
         # Module docstring maps the Windows names; the marker tuple names them
@@ -160,6 +184,40 @@ class PlatformBoundaryContract(unittest.TestCase):
         text = _read(".github/workflows/ci.yml")
         self.assertIn("runs-on: windows-latest", text)
         self.assertIn("verify_quant_pipeline.ps1", text)
+
+class LockAndImageBoundaryContract(unittest.TestCase):
+    def test_lock_selector_refuses_unsupported_os_and_arch_before_writing(self):
+        import platform
+
+        sys.path.insert(0, str(PROJECT_ROOT / "tools"))
+        self.addCleanup(sys.path.pop, 0)
+        import quant_ops
+
+        for os_name, machine in (("Linux", "x86_64"), ("Darwin", "x86_64"), ("SunOS", "sun4v")):
+            with self.subTest(host=f"{os_name} {machine}"), patch.object(
+                platform, "system", return_value=os_name
+            ), patch.object(platform, "machine", return_value=machine):
+                with self.assertRaises(quant_ops.OpsError):
+                    quant_ops.host_lock_file()
+
+    def test_lock_command_never_writes_without_apply(self):
+        text = _read("tools/quant_ops.py")
+        lock_body = text.split("def cmd_lock(", 1)[1].split("\n\ndef _PLATFORM_LOCK_LABELS", 1)[0]
+        self.assertIn("if options.apply:", lock_body)
+        self.assertIn("shutil.copyfile(candidate, lock_path)", lock_body)
+        self.assertEqual(lock_body.count("copyfile"), 1)
+
+    def test_build_context_excludes_local_configuration_at_any_depth(self):
+        lines = [line.strip() for line in _read(".dockerignore").splitlines() if line.strip() and not line.startswith("#")]
+        self.assertIn("**/.env", lines)
+        self.assertIn("**/.env.*", lines)
+        # The template stays in the context: its exception follows both excludes.
+        self.assertLess(lines.index("**/.env"), lines.index("!**/.env.example"))
+        self.assertLess(lines.index("**/.env.*"), lines.index("!**/.env.example"))
+
+    def test_lock_selector_has_no_undefined_names(self):
+        compile(_read("tools/quant_ops.py"), "tools/quant_ops.py", "exec")
+
 
 class EnvTemplateContract(unittest.TestCase):
     def test_env_template_has_placeholders_and_no_real_paths_or_keys(self):

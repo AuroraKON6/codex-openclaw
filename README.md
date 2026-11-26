@@ -41,10 +41,17 @@ Copy-Item .\.env.example .\.env
 
 ```bash
 cp .env.example .env
-./quant.sh bootstrap
-./quant.sh install-pi-runtime
-./quant.sh verify            # 离线全量回归
-./quant.sh run --mock        # 显式 Mock 软件回归
+./quant.sh bootstrap --skip-tests   # 安装 + pip check + runtime contract，退出 0
+./quant.sh install-pi-runtime        # 退出 0
+./quant.sh run --mock                # Mock 7/7，退出 0
+```
+
+以上是可成功的干净安装路径。完整回归命令当前退出 `1`，原因是 7 个与平台无关的既有用例按日期到期（DeepSeek 定价复核日期、研究协议复核有效期），人工复核并更新日期之前，在任何平台都会失败：
+
+```bash
+./quant.sh bootstrap                 # 安装成功，但单测步骤因上述 7 个用例退出 1
+./quant.sh verify                    # 同上，停在单测步骤，退出 1
+.venv/bin/python -m unittest discover -s tests   # 214 个测试：3 failures / 4 errors
 ```
 
 下文所有 `.<名称>.ps1 ...` 命令在 macOS 上对应 `./quant.sh <子命令>`，对照表、Docker 研究镜像、平台受限验收归属和常见错误见 [docs/macos-runbook.md](docs/macos-runbook.md)。计划任务、生产调度和原生 Windows 安全验收（DACL / NTFS）只在 Windows 执行，没有移植，也不以 macOS 结果替代。

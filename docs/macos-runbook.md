@@ -30,17 +30,29 @@
 
 ## 3. 安装与启动
 
+可成功的干净安装路径（每一步都退出 `0`）：
+
 ```bash
 git clone git@github.com:AuroraKON6/codex-openclaw.git && cd codex-openclaw
-cp .env.example .env            # 可选：只放占位符，按第 5 节填写
-./quant.sh bootstrap            # venv + 哈希锁安装 + pip check + runtime contract + 全量单测
-./quant.sh install-pi-runtime   # npm ci（禁用安装脚本）+ 离线模型目录检查
+cp .env.example .env                    # 可选：只放占位符，按第 5 节填写
+./quant.sh bootstrap --skip-tests       # venv + 哈希锁安装 + pip check + runtime contract
+./quant.sh install-pi-runtime           # npm ci（禁用安装脚本）+ 离线模型目录检查
 ./quant.sh python-runtime --require-ready
+./quant.sh run --mock                   # Mock 7/7
 ```
 
 预期：`bootstrap` 结尾输出 `Isolated CPython 3.11 environment is ready: .../.venv/bin/python`；`python-runtime` 输出 `"ok": true`、`"target": "macos-arm64-cpython-3.11-project-venv"`、`"locked_package_count": 32`、`"errors": []`。
 
 bootstrap 强制 `--require-hashes --only-binary=:all:`，可用 `--wheelhouse <目录>` 离线安装；`--skip-tests` 只跳过单测，不跳过合同检查。
+
+**完整回归目前退出 `1`**，不是安装问题。7 个既有用例按日期到期（`test_operations` ×3：`DEEPSEEK_PRICING_REVIEWED_DATE=2026-08-25` 超过 30 天复核期；`test_forward_observation` ×4：研究协议复核有效期已过），在 Windows 上同样失败。人工复核并更新这两处日期之前：
+
+| 命令 | 退出码 | 说明 |
+|---|---|---|
+| `./quant.sh bootstrap`（不带 `--skip-tests`） | 1 | 安装和合同检查成功，单测步骤因上述用例失败 |
+| `./quant.sh verify` | 1 | runtime、secret-scan、source-candidate、packet/decision smoke 全部通过，停在单测步骤；Mock 验收段不会执行 |
+| `./quant.sh drill` | 1 | 停在 `test_operations` 并写出报告 |
+| `.venv/bin/python -m unittest discover -s tests` | 1 | 214 个测试，3 failures / 4 errors |
 
 ## 4. 依赖锁与运行时合同
 
@@ -139,13 +151,13 @@ KONM-136 / KONM-120 的候选代码不在本分支的 `main`（`54652b6`）上�
 |---|---|---|
 | `CPython 3.11.x is required` | 没有 3.11 解释器 | `uv python install 3.11`，或 `export QUANT_BASE_PYTHON=<路径>` |
 | `Project Python environment is missing` | 未 bootstrap | `./quant.sh bootstrap` |
-| `operating_system: expected Windows or Darwin or Linux; running ...` / `machine_architecture` 失败 | 非支持的宿主或架构 | 合同按宿主平台强制；x86_64 需要另行评审并生成对应哈希锁 |
+| `operating_system: expected Windows or Darwin or Linux; running ...` / `machine_architecture` 失败 | 非支持的宿主或架构 | 合同按宿主平台强制；`./quant.sh lock` 在解析依赖之前就会拒绝，x86_64 需要另行评审并生成对应哈希锁 |
 | `locked_distributions` 报 unexpected | venv 里装了锁外的包 | 删除 `.venv` 重新 bootstrap |
 | `Pinned Pi runtime does not expose deepseek/deepseek-v4-pro` | Pi 未安装或版本不符 | `./quant.sh install-pi-runtime`（离线目录枚举不需要真实密钥，也不会写入凭据） |
 | `Pi 0.84.2 requires Node >= 22.19.0` | Node 版本过低 | 升级 Node（如 `nvm install 22`） |
 | `DeepSeek pricing baseline is stale` | `DEEPSEEK_PRICING_REVIEWED_DATE` 超过 30 天复核期 | 人工复核官方价格页后更新日期；这是治理动作，不要为了让检查通过而改日期 |
 | `Source revision preflight failed: workspace is dirty` | 真实模式要求干净已提交源码 | 提交/暂存改动，或改用 `--mock` 做软件回归 |
-| `verify` 的单测阶段失败于 `test_operations` / `test_forward_observation` | 与平台无关的时间到期（定价复核日期、研究协议有效期） | 同上，属既有失败；见交付报告的"既有失败"清单 |
+| `verify` 的单测阶段失败于 `test_operations` / `test_forward_observation` | 与平台无关的时间到期（定价复核日期、研究协议有效期） | 同上，属既有失败；见第 3 节 |
 | Docker 卷不可写 | 绑定目录属主不是容器用户 | `export QUANT_DOCKER_UID=$(id -u) QUANT_DOCKER_GID=$(id -g)` |
 | `.ps1` 在 macOS 上无法执行 | 设计如此 | 使用 `./quant.sh`；不要安装 pwsh 来绕过平台边界 |
 

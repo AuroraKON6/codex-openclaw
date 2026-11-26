@@ -38,7 +38,7 @@ import subprocess
 import sys
 import tempfile
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -208,17 +208,29 @@ def host_lock_file() -> Path:
     """Committed hash lock for the host platform, from the runtime contract.
 
     The driver only runs on POSIX hosts that have a lock (Darwin arm64, Linux
-    arm64); an unsupported host fails the pipeline's own operating_system
-    check instead of borrowing another platform's wheels.
+    arm64). An unsupported OS or architecture is refused here, before any
+    dependency is resolved or any lock is written, instead of borrowing
+    another platform's lock.
     """
+
+    import platform
 
     sys.path.insert(0, str(PROJECT_ROOT))
     try:
-        from quant_agents.python_runtime import current_runtime_contract
+        from quant_agents.python_runtime import RUNTIME_CONTRACTS
 
-        return PROJECT_ROOT / current_runtime_contract().lock_file
+        contract = RUNTIME_CONTRACTS.get(platform.system())
     finally:
         sys.path.pop(0)
+    if contract is None or platform.machine() not in contract.machines:
+        supported = ", ".join(
+            " ".join([c.platform, *c.machines]) for c in RUNTIME_CONTRACTS.values()
+        )
+        raise OpsError(
+            f"No hash-locked runtime contract for {platform.system()} {platform.machine()}; "
+            f"supported: {supported}. A new platform needs a reviewed lock first."
+        )
+    return PROJECT_ROOT / contract.lock_file
 
 
 def load_env_file() -> bool:
@@ -407,7 +419,7 @@ def cmd_lock(args: list[str]) -> int:
         raise OpsError("Wheel download failed.")
     candidate = build_root / lock_path.name
     build_result = _capture(
-        [python, str(PROJECT_ROOT / "tools" / "build_python_lock.py"), "--resolved", str(resolved), "--wheelhouse", str(wheelhouse), "--output", str(candidate), "--platform-label", _platform_label(), "--origin-note", _ORIGIN_NOTE]
+        [python, str(PROJECT_ROOT / "tools" / "build_python_lock.py"), "--resolved", str(resolved), "--wheelhouse", str(wheelhouse), "--output", str(candidate), "--platform-label", _platform_label(), "--origin-note", _origin_note()]
     )
     if build_result.returncode != 0:
         sys.stderr.write(build_result.stderr)

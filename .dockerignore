@@ -1,6 +1,9 @@
 .git
 .venv
-.env
+# Local configuration never enters the image, at any depth; only the template does.
+**/.env
+**/.env.*
+!**/.env.example
 .cache
 .tmp
 runs
