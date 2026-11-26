@@ -573,6 +573,16 @@ def cmd_run(args: list[str]) -> int:
     return exit_code
 
 
+def weekly_window(since: str, until: str, now: datetime | None = None) -> tuple[str, str]:
+    """Resolve the report period; an unset end defaults to the last seven days."""
+
+    current = now or datetime.now()
+    return (
+        since or (current - timedelta(days=7)).strftime("%Y%m%d"),
+        until or current.strftime("%Y%m%d"),
+    )
+
+
 def cmd_weekly(args: list[str]) -> int:
     require_posix("weekly")
     parser = argparse.ArgumentParser(prog="quant.sh weekly")
@@ -581,8 +591,7 @@ def cmd_weekly(args: list[str]) -> int:
     parser.add_argument("--until", default="")
     parser.add_argument("--runtime", choices=["pi"], default="pi")
     options = parser.parse_args(args)
-    since = options.since or (datetime.now() - timedelta(days=7)).strftime("%Y%m%d")
-    until = options.until or datetime.now().strftime("%Y%m%d")
+    since, until = weekly_window(options.since, options.until)
     print("=== CSI 500 Weekly Report ===")
     print(f"Period: {since} ~ {until}")
     print(f"Runtime: {options.runtime}")

@@ -97,25 +97,58 @@ class NoPaidCallsByDefaultContract(unittest.TestCase):
             self.assertIn(required, verify_body)
 
     def test_weekly_without_dates_uses_the_last_seven_days(self):
+        # The date logic is pure and platform-free, so it is tested directly
+        # and stays green on the Windows CI runner, where the POSIX entry
+        # itself must refuse (see the next test).
+        sys.path.insert(0, str(PROJECT_ROOT / "tools"))
+        self.addCleanup(sys.path.pop, 0)
+        import quant_ops
+
+        fixed = datetime(2026, 11, 27, 13, 40, 59)
+        self.assertEqual(quant_ops.weekly_window("", "", now=fixed), ("20261120", "20261127"))
+        self.assertEqual(quant_ops.weekly_window("20261101", "", now=fixed), ("20261101", "20261127"))
+        self.assertEqual(quant_ops.weekly_window("", "20261110", now=fixed), ("20261120", "20261110"))
+        self.assertEqual(quant_ops.weekly_window("20261101", "20261110", now=fixed), ("20261101", "20261110"))
+        self.assertEqual(
+            quant_ops.weekly_window("", "", now=datetime(2026, 3, 1, 0, 0, 0)),
+            ("20260222", "20260301"),
+        )
+
+    def test_weekly_passes_the_resolved_window_to_the_cli(self):
         sys.path.insert(0, str(PROJECT_ROOT / "tools"))
         self.addCleanup(sys.path.pop, 0)
         import quant_ops
 
         recorded = {}
+
         def fake_run_python(args, **_):
             recorded["args"] = args
             return SimpleNamespace(returncode=0)
 
+        fixed = datetime(2026, 11, 27, 13, 40, 59)
         with patch.object(quant_ops, "load_env_file", return_value=False), patch.object(
             quant_ops, "run_python", side_effect=fake_run_python
-        ):
+        ), patch.object(quant_ops, "weekly_window", return_value=quant_ops.weekly_window("", "", now=fixed)) as window:
             exit_code = quant_ops.cmd_weekly(["--mock"])
         self.assertEqual(exit_code, 0)
+        window.assert_called_once_with("", "")
         args = recorded["args"]
-        today = datetime.now()
-        self.assertEqual(args[args.index("--since") + 1], (today - timedelta(days=7)).strftime("%Y%m%d"))
-        self.assertEqual(args[args.index("--until") + 1], today.strftime("%Y%m%d"))
+        self.assertEqual(args[args.index("--since") + 1], "20261120")
+        self.assertEqual(args[args.index("--until") + 1], "20261127")
         self.assertIn("--mock", args)
+
+    def test_posix_entry_refuses_to_run_on_windows(self):
+        sys.path.insert(0, str(PROJECT_ROOT / "tools"))
+        self.addCleanup(sys.path.pop, 0)
+        import quant_ops
+
+        with patch.object(quant_ops.os, "name", "nt"), patch.object(
+            quant_ops, "run_python"
+        ) as run_python:
+            for command, args in (("cmd_weekly", ["--mock"]), ("cmd_run", ["--mock"])):
+                with self.subTest(command=command), self.assertRaises(quant_ops.OpsError):
+                    getattr(quant_ops, command)(args)
+            run_python.assert_not_called()
 
     def test_run_never_falls_back_to_mock(self):
         text = _read("tools/quant_ops.py")
