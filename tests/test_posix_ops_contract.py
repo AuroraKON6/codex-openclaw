@@ -126,7 +126,11 @@ class NoPaidCallsByDefaultContract(unittest.TestCase):
             return SimpleNamespace(returncode=0)
 
         fixed = datetime(2026, 11, 27, 13, 40, 59)
-        with patch.object(quant_ops, "load_env_file", return_value=False), patch.object(
+        # The platform refusal has its own test; it is neutralised here so the
+        # forwarding check also holds under an os.name="nt" fixture.
+        with patch.object(quant_ops, "require_posix"), patch.object(
+            quant_ops, "load_env_file", return_value=False
+        ), patch.object(
             quant_ops, "run_python", side_effect=fake_run_python
         ), patch.object(quant_ops, "weekly_window", return_value=quant_ops.weekly_window("", "", now=fixed)) as window:
             exit_code = quant_ops.cmd_weekly(["--mock"])
@@ -222,6 +226,12 @@ class LockAndImageBoundaryContract(unittest.TestCase):
     def test_lock_selector_refuses_unsupported_os_and_arch_before_writing(self):
         import platform
 
+        # host_lock_file imports the contract module; load it now, outside the
+        # platform patch, so an os.name fixture cannot skew pathlib during import.
+        if "quant_agents.python_runtime" not in sys.modules:
+            sys.path.insert(0, str(PROJECT_ROOT))
+            self.addCleanup(sys.path.pop, 0)
+            import quant_agents.python_runtime  # noqa: F401
         sys.path.insert(0, str(PROJECT_ROOT / "tools"))
         self.addCleanup(sys.path.pop, 0)
         import quant_ops
