@@ -1,0 +1,11 @@
+.git
+.venv
+.env
+.cache
+.tmp
+runs
+drill_reports
+scheduled_inputs
+pi_runtime/node_modules
+__pycache__
+*.pyc

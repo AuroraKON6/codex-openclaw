@@ -52,6 +52,13 @@ from .secret_scan import evaluate_secret_scan_receipt
 from .source_review import evaluate_source_review_decision
 
 
+def _recovery_hint() -> str:
+    if os.name == "nt":
+        return "先执行 .\\check_pi.ps1，再运行 .\\run_quant_agents.ps1"
+    return "先执行 ./quant.sh check-pi，再运行 ./quant.sh run"
+
+
+
 AGENT_PIPELINE = [
     ResearchLeadAgent,
     DataAgent,
@@ -1234,7 +1241,7 @@ def _generate_summary(state: dict, output_dir: str):
 
     if state.get("errors"):
         next_actions += [
-            "先执行 .\\check_pi.ps1，再运行 .\\run_quant_agents.ps1",
+            _recovery_hint(),
             "真实 Run 达到 7/7 后复验 manifest/事件链，完成五方审批、外部归档和监控接入；此前不得安装生产调度",
         ]
 

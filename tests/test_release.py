@@ -140,7 +140,7 @@ class ReleaseTests(unittest.TestCase):
             candidate = prepare_release_candidate(run_dir)
 
         self.assertIn(
-            "locked Windows CPython 3.11 project runtime evidence is missing or invalid",
+            "locked platform CPython 3.11 project runtime evidence is missing or invalid",
             candidate["blockers"],
         )
 

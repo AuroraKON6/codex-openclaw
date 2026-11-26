@@ -8,7 +8,26 @@ from pathlib import Path
 from packaging.utils import canonicalize_name, parse_wheel_filename
 
 
-def build_lock(resolved_path: Path, wheelhouse: Path, output_path: Path) -> dict:
+def locked_pins(lock_path: Path) -> list[tuple[str, str]]:
+    """Canonical (name, version) pairs of a committed lock, in file order."""
+
+    pins = []
+    for line in lock_path.read_text(encoding="utf-8").splitlines():
+        match = re.match(r"^([A-Za-z0-9][A-Za-z0-9_.-]*)==([^\s\\]+)", line)
+        if match:
+            pins.append((canonicalize_name(match.group(1)), match.group(2)))
+    return pins
+
+
+def build_lock(
+    resolved_path: Path,
+    wheelhouse: Path,
+    output_path: Path,
+    platform_label: str = "Windows CPython 3.11",
+    origin_note: str = (
+        "Resolved with pip-tools 7.6.1 and verified from one selected wheel per pin."
+    ),
+) -> dict:
     wheels = {}
     for path in sorted(wheelhouse.glob("*.whl")):
         name, version, _build, _tags = parse_wheel_filename(path.name)
@@ -34,8 +53,8 @@ def build_lock(resolved_path: Path, wheelhouse: Path, output_path: Path) -> dict
         )
 
     lines = [
-        "# Hash-locked Windows CPython 3.11 runtime dependencies.",
-        "# Resolved with pip-tools 7.6.1 and verified from one selected wheel per pin.",
+        f"# Hash-locked {platform_label} runtime dependencies.",
+        f"# {origin_note}",
         "# Regenerate through the reviewed lock workflow; do not edit pins or hashes manually.",
     ]
     for name, version in pins:
@@ -67,11 +86,25 @@ def main() -> None:
     parser.add_argument("--resolved", required=True)
     parser.add_argument("--wheelhouse", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument(
+        "--platform-label",
+        default="Windows CPython 3.11",
+        help="wheel platform recorded in the lock header, e.g. 'macOS arm64 CPython 3.11'",
+    )
+    parser.add_argument(
+        "--origin-note",
+        default=(
+            "Resolved with pip-tools 7.6.1 and verified from one selected wheel per pin."
+        ),
+        help="reviewed provenance sentence recorded in the lock header",
+    )
     args = parser.parse_args()
     result = build_lock(
         Path(args.resolved),
         Path(args.wheelhouse),
         Path(args.output),
+        platform_label=args.platform_label,
+        origin_note=args.origin_note,
     )
     for key, value in result.items():
         print(f"{key}={value}")

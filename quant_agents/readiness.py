@@ -32,7 +32,7 @@ DEFAULT_PLANNING_STATUS_PATH = PROJECT_ROOT / "governance" / "project_execution_
 
 CHECK_ACTIONS = {
     "input_contract": "Freeze and validate the exact CSI500 research input.",
-    "python_runtime": "Bootstrap and use the locked Windows CPython 3.11 project environment.",
+    "python_runtime": "Bootstrap and use the locked platform CPython 3.11 project environment.",
     "source_baseline": "Establish a reviewed private clean commit, tag, and remote.",
     "secret_scan": "Review the candidate tree and regenerate the secret-scan receipt.",
     "source_review_decision": "Obtain distinct Platform and Security per-file review evidence outside the repository.",
@@ -234,7 +234,7 @@ def _python_runtime_check(checks: list[dict[str, Any]]) -> None:
         runtime = inspect_python_runtime()
         passed = runtime.get("ok") is True
         summary = (
-            "The locked Windows CPython 3.11 project environment passed."
+            "The locked platform CPython 3.11 project environment passed."
             if passed
             else "; ".join(runtime.get("errors", ["Python runtime check failed."]))
         )

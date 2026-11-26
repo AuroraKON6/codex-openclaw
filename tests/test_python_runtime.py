@@ -11,6 +11,9 @@ from unittest.mock import patch
 from quant_agents.__main__ import cmd_health, cmd_python_runtime
 from quant_agents.orchestrator import PipelinePreflightError, _preflight_dependencies, run_pipeline
 from quant_agents.python_runtime import (
+    RUNTIME_CONTRACTS,
+    WINDOWS_RUNTIME_TARGET,
+    current_runtime_contract,
     inspect_python_runtime,
     normalize_distribution_name,
     parse_locked_requirements,
@@ -19,16 +22,40 @@ from quant_agents.python_runtime import (
 from test_input_validation import valid_input
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 class PythonRuntimeTests(unittest.TestCase):
     def test_current_project_runtime_satisfies_contract(self):
         result = inspect_python_runtime()
 
         self.assertTrue(result["ok"], result["errors"])
-        self.assertEqual(result["target"], "windows-cpython-3.11-project-venv")
+        contract = current_runtime_contract()
+        self.assertEqual(result["target"], contract.target)
+        self.assertEqual(result["platform"], contract.platform)
         self.assertEqual(result["locked_package_count"], 32)
         self.assertEqual(result["package_mismatches"], [])
         self.assertEqual(result["unexpected_distributions"], [])
         self.assertFalse(result["user_site_enabled"])
+
+    def test_windows_contract_and_lock_are_unchanged(self):
+        windows = RUNTIME_CONTRACTS["Windows"]
+        self.assertEqual(windows.target, WINDOWS_RUNTIME_TARGET)
+        self.assertEqual(windows.venv_python, Path("Scripts") / "python.exe")
+        self.assertEqual(windows.lock_file, "requirements.txt")
+        self.assertEqual(windows.machines, ())
+
+    def test_every_platform_lock_pins_the_same_reviewed_versions(self):
+        from tools.build_python_lock import locked_pins
+
+        windows_pins = locked_pins(ROOT / RUNTIME_CONTRACTS["Windows"].lock_file)
+        self.assertEqual(len(windows_pins), 32)
+        for contract in RUNTIME_CONTRACTS.values():
+            self.assertEqual(
+                locked_pins(ROOT / contract.lock_file),
+                windows_pins,
+                contract.lock_file,
+            )
 
     def test_lock_parser_requires_exact_pin_and_hash(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -53,7 +80,8 @@ class PythonRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / ".python-version").write_text("3.11\n", encoding="utf-8")
-            (root / "requirements.txt").write_text(
+            # The probe root must carry the host platform's lock file name.
+            (root / current_runtime_contract().lock_file).write_text(
                 "demo==1.0 \\\n    --hash=sha256:" + "b" * 64 + "\n",
                 encoding="utf-8",
             )
