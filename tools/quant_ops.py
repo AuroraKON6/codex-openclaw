@@ -261,7 +261,7 @@ def run_python(
         ),
     )
     if check and result.returncode != 0:
-        raise OpsError(f"python -m {' '.join(args)} failed with exit code {result.returncode}")
+        raise OpsError(f"python {' '.join(args)} failed with exit code {result.returncode}")
     return result
 
 
@@ -279,7 +279,7 @@ def run_json(args: list[str], *, check: bool = True) -> dict:
     if result.returncode != 0:
         sys.stderr.write(result.stderr)
         if check:
-            raise OpsError(f"python -m {' '.join(args)} failed with exit code {result.returncode}")
+            raise OpsError(f"python {' '.join(args)} failed with exit code {result.returncode}")
     return json.loads(result.stdout)
 
 
