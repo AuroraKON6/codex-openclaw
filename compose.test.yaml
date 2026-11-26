@@ -1,0 +1,19 @@
+# Override for the full offline unit suite inside the built image:
+#   docker compose -f compose.yaml -f compose.test.yaml run --rm test
+# Kept separate from compose.yaml because four governance tests deliberately
+# create "repository-local" evidence inside the project tree, so the suite
+# needs a writable (throwaway) /app layer that the batch service must not have.
+services:
+  test:
+    image: quant-research-pi-runtime:local
+    platform: linux/arm64
+    init: true
+    network_mode: none
+    read_only: false
+    user: "0:0"
+    environment:
+      PI_NODE_CLI: /usr/local/bin/node
+      PI_STATE_DIR: /app/.cache/pi-agent
+      TMPDIR: /tmp
+    entrypoint: ["/app/.venv/bin/python"]
+    command: ["-m", "unittest", "discover", "-s", "tests"]

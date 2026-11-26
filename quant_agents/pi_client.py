@@ -33,7 +33,7 @@ MINIMUM_NODE_VERSION = (22, 19, 0)
 # are preserved so the provider endpoint stays reachable in restricted
 # networks.
 PI_CHILD_ENV_ALLOWLIST = (
-    # Windows system essentials for spawning node.exe
+    # System essentials for spawning node (Windows names first, then POSIX)
     "PATH",
     "SystemRoot",
     "SystemDrive",
@@ -42,10 +42,14 @@ PI_CHILD_ENV_ALLOWLIST = (
     "PATHEXT",
     "TEMP",
     "TMP",
+    # POSIX counterpart of TEMP/TMP
+    "TMPDIR",
     # User profile locations read by Node (os.homedir) and its runtime
     "USERPROFILE",
     "HOMEDRIVE",
     "HOMEPATH",
+    # POSIX counterpart of USERPROFILE for Node (os.homedir)
+    "HOME",
     "APPDATA",
     "LOCALAPPDATA",
     # Optional proxy configuration for provider connectivity
@@ -62,6 +66,15 @@ PI_CHILD_ENV_ALLOWLIST = (
 
 class PiRuntimeError(RuntimeError):
     pass
+
+
+def _install_hint(message: str) -> str:
+    command = (
+        ".\\install_pi_runtime.ps1"
+        if os.name == "nt"
+        else "./quant.sh install-pi-runtime"
+    )
+    return f"{message}; run {command}"
 
 
 class PiClient:
@@ -227,7 +240,7 @@ class PiClient:
             errors.append(f"Node executable not found: {self.node_cli}")
         if not os.path.isfile(self.cli_path):
             errors.append(
-                "Pinned Pi CLI is not installed; run .\\install_pi_runtime.ps1"
+                _install_hint("Pinned Pi CLI is not installed")
             )
 
         node_version = ""

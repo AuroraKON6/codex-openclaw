@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 from quant_agents.orchestrator import run_pipeline
+from quant_agents.python_runtime import SUPPORTED_RUNTIME_TARGETS, inspect_python_runtime
 from quant_agents.release import (
     archive_run,
     build_retention_plan,
@@ -140,7 +141,42 @@ class ReleaseTests(unittest.TestCase):
             candidate = prepare_release_candidate(run_dir)
 
         self.assertIn(
-            "locked Windows CPython 3.11 project runtime evidence is missing or invalid",
+            "locked platform CPython 3.11 project runtime evidence is missing or invalid",
+            candidate["blockers"],
+        )
+
+    def test_runtime_evidence_from_another_platform_target_is_rejected(self):
+        # Evidence is otherwise this host's own (same lock SHA-256); only the
+        # target label is rewritten to another platform's.
+        host_target = inspect_python_runtime()["target"]
+        for foreign_target in sorted(SUPPORTED_RUNTIME_TARGETS - {host_target}):
+            with self.subTest(target=foreign_target), tempfile.TemporaryDirectory() as root:
+                run_dir = os.path.join(root, "run-1")
+                run_pipeline(valid_input(), run_dir, mock=True, runtime="pi")
+                state_path = os.path.join(run_dir, "state.json")
+                with open(state_path, encoding="utf-8") as file:
+                    state = json.loads(file.read())
+                for check in state["preflight"]["checks"]:
+                    if check.get("name") == "python_runtime_contract":
+                        check["detail"]["target"] = foreign_target
+                with open(state_path, "w", encoding="utf-8") as file:
+                    json.dump(state, file)
+
+                candidate = prepare_release_candidate(run_dir)
+
+                self.assertIn(
+                    "locked platform CPython 3.11 project runtime evidence is missing or invalid",
+                    candidate["blockers"],
+                )
+
+    def test_untouched_runtime_evidence_passes_the_platform_binding(self):
+        with tempfile.TemporaryDirectory() as root:
+            run_dir = os.path.join(root, "run-1")
+            run_pipeline(valid_input(), run_dir, mock=True, runtime="pi")
+            candidate = prepare_release_candidate(run_dir)
+
+        self.assertNotIn(
+            "locked platform CPython 3.11 project runtime evidence is missing or invalid",
             candidate["blockers"],
         )
 

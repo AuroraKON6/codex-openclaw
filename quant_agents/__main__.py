@@ -858,7 +858,7 @@ def main():
 
     p_python_runtime = sub.add_parser(
         "python-runtime",
-        help="Inspect the Windows CPython 3.11 project-venv contract offline",
+        help="Inspect the platform CPython 3.11 project-venv contract offline",
     )
     p_python_runtime.add_argument(
         "--require-ready",

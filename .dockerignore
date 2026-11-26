@@ -1,0 +1,14 @@
+.git
+.venv
+# Local configuration never enters the image, at any depth; only the template does.
+**/.env
+**/.env.*
+!**/.env.example
+.cache
+.tmp
+runs
+drill_reports
+scheduled_inputs
+pi_runtime/node_modules
+__pycache__
+*.pyc

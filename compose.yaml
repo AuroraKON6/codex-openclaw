@@ -1,0 +1,30 @@
+# Docker side of the research image (arm64). Offline by default: the service
+# has no network, no ports, no credentials, and a read-only filesystem except
+# for the run output and scratch directories. Windows keeps the host
+# entry points; this file is for macOS/Linux Docker Desktop and CI.
+services:
+  quant:
+    build:
+      context: .
+      platforms:
+        - linux/arm64
+    image: quant-research-pi-runtime:local
+    platform: linux/arm64
+    init: true
+    read_only: true
+    network_mode: none
+    # No ports are published: the pipeline is a batch job, not a service.
+    user: "${QUANT_DOCKER_UID:-1000}:${QUANT_DOCKER_GID:-1000}"
+    environment:
+      PI_NODE_CLI: /usr/local/bin/node
+      PI_STATE_DIR: /app/.cache/pi-agent
+      TMPDIR: /tmp
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+      - /app/.cache:size=256m,uid=1000,gid=1000
+    volumes:
+      # Run output lives outside the repository image and survives the container.
+      - type: bind
+        source: ${QUANT_DOCKER_RUNS_DIR:-../quant-research-runs-docker}
+        target: /app/runs
+    command: ["python-runtime", "--require-ready"]

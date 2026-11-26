@@ -1,6 +1,6 @@
 # CSI 500 Pi 多 Agent 研究流水线
 
-项目路径：`E:\闲鱼\codex openclaw`。
+项目仓库：`git@github.com:AuroraKON6/codex-openclaw.git`。Windows 与 macOS（Apple Silicon）使用同一套 Python 控制面，入口脚本按平台区分：Windows 用根目录 `*.ps1`，macOS/Linux 用 `./quant.sh`（见 `docs/macos-runbook.md`）。
 
 这是一个面向 A 股中证 500 **内部离线研究** 的可审计流水线。Pi Agent 执行真实 DeepSeek V4 Pro 推理，Tushare 提供获准的市场数据，Python 负责业务顺序、点时数据、确定性信号与回测、预算、审计和发布门禁。
 
@@ -20,8 +20,8 @@
 
 ## 环境要求
 
-- Windows PowerShell 5.1+。
-- Windows CPython 3.11.x；项目命令只使用隔离的 `.venv`，不使用 PATH 中的全局 Python。
+- Windows PowerShell 5.1+（Windows 入口），或 macOS 14+ / Linux arm64 上的 POSIX shell（`./quant.sh` 入口）。
+- CPython 3.11.x；项目命令只使用隔离的 `.venv`，不使用 PATH 中的全局 Python。运行时合同按宿主平台绑定各自的哈希锁：Windows `requirements.txt`、macOS arm64 `requirements-macos-arm64.txt`、Linux arm64 `requirements-linux-aarch64.txt`，三者 pin 完全一致。
 - Node.js `>=22.19.0` 和 npm。
 - DeepSeek API Key。
 - Tushare Token 及覆盖本项目用途的有效授权证据。
@@ -36,6 +36,25 @@ cd "E:\闲鱼\codex openclaw"
 .\install_pi_runtime.ps1
 Copy-Item .\.env.example .\.env
 ```
+
+### macOS / Linux 入口
+
+```bash
+cp .env.example .env
+./quant.sh bootstrap --skip-tests   # 安装 + pip check + runtime contract，退出 0
+./quant.sh install-pi-runtime        # 退出 0
+./quant.sh run --mock                # Mock 7/7，退出 0
+```
+
+以上是可成功的干净安装路径。完整回归命令当前退出 `1`，原因是 7 个与平台无关的既有用例按日期到期（DeepSeek 定价复核日期、研究协议复核有效期），人工复核并更新日期之前，在任何平台都会失败：
+
+```bash
+./quant.sh bootstrap                 # 安装成功，但单测步骤因上述 7 个用例退出 1
+./quant.sh verify                    # 同上，停在单测步骤，退出 1
+.venv/bin/python -m unittest discover -s tests   # 214 个测试：3 failures / 4 errors
+```
+
+下文所有 `.<名称>.ps1 ...` 命令在 macOS 上对应 `./quant.sh <子命令>`，对照表、Docker 研究镜像、平台受限验收归属和常见错误见 [docs/macos-runbook.md](docs/macos-runbook.md)。计划任务、生产调度和原生 Windows 安全验收（DACL / NTFS）只在 Windows 执行，没有移植，也不以 macOS 结果替代。
 
 `requirements.in` 固定三项直依赖，`requirements.txt` 固定 32 个 Windows CPython 3.11 wheel 及 SHA-256；bootstrap 强制 `--require-hashes --only-binary`，执行 `pip check`、程序内 runtime contract 和测试。程序内门禁要求当前解释器必须是项目 `.venv` 中的 Windows CPython 3.11、禁用 user site、全部锁定版本一致且不存在 pip/setuptools/wheel 以外的额外分发包。重新解析依赖先运行 `.\lock_python_dependencies.ps1` 生成忽略目录中的候选，独立复核后才允许显式 `-Apply`。在 `.env` 或受控进程环境配置凭据，不得提交 `.env`、许可证原件或密钥。
 
@@ -284,6 +303,7 @@ $env:SOURCE_REVIEW_DECISION_PATH = 'D:\controlled\quant\source-review-decision-v
 - `docs/DEPLOYMENT.md`：部署与回滚。
 - `docs/INCIDENT_DRILL.md`：Pi/API/数据故障演练。
 - `docs/DEPLOYMENT_ACCEPTANCE.md`：逐项部署候选验收与外部阻断证据。
+- `docs/macos-runbook.md`：macOS（darwin arm64）安装、启动、验证、Docker 镜像、平台受限验收归属与数据迁移步骤。
 - `docs/OPEN_SOURCE_ECOSYSTEM_REVIEW.md`：Qlib、RD-Agent、LEAN、TradingAgents、RQAlpha 与 Pi 插件采用评审。
 - `docs/adr/`：12 条核心架构决策记录（Python 权威、Pi no-tools、无自动回退、证据外置、Mock 不可发布等），索引见 `docs/adr/README.md`。
 

@@ -6,6 +6,7 @@ import platform
 import re
 import site
 import sys
+from dataclasses import dataclass
 from importlib import metadata
 from pathlib import Path
 from typing import Any
@@ -16,10 +17,66 @@ from .config import PROJECT_ROOT
 PYTHON_RUNTIME_SCHEMA_VERSION = 1
 EXPECTED_PYTHON_MINOR = "3.11"
 EXPECTED_IMPLEMENTATION = "CPython"
-EXPECTED_PLATFORM = "Windows"
+WINDOWS_RUNTIME_TARGET = "windows-cpython-3.11-project-venv"
 BOOTSTRAP_DISTRIBUTIONS = {"pip", "setuptools", "wheel"}
+
+
+@dataclass(frozen=True)
+class RuntimeContract:
+    """Per-platform shape of the locked CPython 3.11 project-venv contract.
+
+    Every contract keeps the same version, hash-lock, user-site and
+    distribution rules; only the interpreter path, the wheel-hash lock for
+    that platform's wheels, and the evidence ``target`` label differ. The
+    label travels into run evidence so a run executed on one platform can
+    never be presented as evidence for another.
+    """
+
+    platform: str
+    target: str
+    venv_python: Path
+    lock_file: str
+    machines: tuple[str, ...] = ()
+
+
+RUNTIME_CONTRACTS = {
+    "Windows": RuntimeContract(
+        platform="Windows",
+        target=WINDOWS_RUNTIME_TARGET,
+        venv_python=Path("Scripts") / "python.exe",
+        lock_file="requirements.txt",
+    ),
+    "Darwin": RuntimeContract(
+        platform="Darwin",
+        target="macos-arm64-cpython-3.11-project-venv",
+        venv_python=Path("bin") / "python",
+        lock_file="requirements-macos-arm64.txt",
+        machines=("arm64",),
+    ),
+    "Linux": RuntimeContract(
+        platform="Linux",
+        target="linux-arm64-cpython-3.11-project-venv",
+        venv_python=Path("bin") / "python",
+        lock_file="requirements-linux-aarch64.txt",
+        machines=("aarch64",),
+    ),
+}
+SUPPORTED_RUNTIME_TARGETS = frozenset(
+    contract.target for contract in RUNTIME_CONTRACTS.values()
+)
+EXPECTED_PLATFORM = RUNTIME_CONTRACTS["Windows"].platform
 _PIN_PATTERN = re.compile(r"^([A-Za-z0-9_.-]+)==([^\s\\]+)\s*\\?$")
 _HASH_PATTERN = re.compile(r"--hash=sha256:([0-9a-f]{64})$")
+
+
+def current_runtime_contract() -> RuntimeContract:
+    """Contract for the host platform; unsupported hosts resolve to Windows.
+
+    An unsupported host therefore keeps failing the ``operating_system``
+    check instead of silently adopting a contract that has no locked wheels.
+    """
+
+    return RUNTIME_CONTRACTS.get(platform.system(), RUNTIME_CONTRACTS["Windows"])
 
 
 def normalize_distribution_name(value: str) -> str:
@@ -70,10 +127,13 @@ def parse_locked_requirements(path: str | Path) -> dict[str, Any]:
 
 def inspect_python_runtime(project_root: str | Path = PROJECT_ROOT) -> dict[str, Any]:
     root = Path(project_root).resolve()
-    lock_path = root / "requirements.txt"
     version_path = root / ".python-version"
     expected_venv = root / ".venv"
-    expected_executable = expected_venv / "Scripts" / "python.exe"
+    # The contract is selected from the host actually running the interpreter,
+    # never from configuration, so a macOS run cannot claim the Windows target.
+    contract = current_runtime_contract()
+    lock_path = root / contract.lock_file
+    expected_executable = expected_venv / contract.venv_python
     errors: list[str] = []
     checks: list[dict[str, Any]] = []
 
@@ -112,9 +172,23 @@ def inspect_python_runtime(project_root: str | Path = PROJECT_ROOT) -> dict[str,
         checks,
         errors,
         "operating_system",
-        actual_platform == EXPECTED_PLATFORM,
-        f"expected {EXPECTED_PLATFORM}; running {actual_platform}",
+        actual_platform in RUNTIME_CONTRACTS,
+        (
+            f"expected {' or '.join(RUNTIME_CONTRACTS)}; "
+            f"running {actual_platform}"
+        ),
     )
+    if contract.machines:
+        _record_check(
+            checks,
+            errors,
+            "machine_architecture",
+            platform.machine() in contract.machines,
+            (
+                f"expected {' or '.join(contract.machines)} for "
+                f"{actual_platform}; running {platform.machine()}"
+            ),
+        )
     _record_check(
         checks,
         errors,
@@ -168,7 +242,7 @@ def inspect_python_runtime(project_root: str | Path = PROJECT_ROOT) -> dict[str,
     return {
         "schema_version": PYTHON_RUNTIME_SCHEMA_VERSION,
         "ok": not errors,
-        "target": "windows-cpython-3.11-project-venv",
+        "target": contract.target,
         "project_root": str(root),
         "expected_executable": str(expected_executable),
         "executable": str(actual_executable),
@@ -177,6 +251,7 @@ def inspect_python_runtime(project_root: str | Path = PROJECT_ROOT) -> dict[str,
         "python_version": actual_version,
         "implementation": actual_implementation,
         "platform": actual_platform,
+        "machine": platform.machine(),
         "venv_prefix": str(actual_prefix),
         "user_site_enabled": site.ENABLE_USER_SITE,
         "requirements_lock": str(lock_path),

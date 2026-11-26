@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import platform
 import re
 import stat
 import tempfile
@@ -21,6 +22,7 @@ from .research_protocol import (
 )
 from .experiment_registry import verify_experiment_registry_gate
 from .operations import is_current_model_pricing, verify_event_chain
+from .python_runtime import current_runtime_contract
 from .secret_scan import evaluate_secret_scan_receipt
 from .source_review import evaluate_source_review_decision
 
@@ -841,7 +843,11 @@ def _release_blockers(
         blockers.append("source revision is not a clean committed baseline")
     python_runtime = _find_preflight_check(state, "python_runtime_contract")
     python_detail = python_runtime.get("detail", {})
-    requirements_path = PROJECT_ROOT / "requirements.txt"
+    # One host contract supplies both the expected target label and the lock
+    # to re-hash, so evidence from another platform is rejected even when it
+    # happens to carry this host's lock hash.
+    host_contract = current_runtime_contract()
+    requirements_path = PROJECT_ROOT / host_contract.lock_file
     current_lock_sha256 = (
         sha256_file(requirements_path) if requirements_path.is_file() else None
     )
@@ -849,14 +855,14 @@ def _release_blockers(
         not python_runtime
         or python_runtime.get("status") != "ok"
         or python_detail.get("ok") is not True
-        or python_detail.get("target") != "windows-cpython-3.11-project-venv"
+        or python_detail.get("target") != host_contract.target
         or python_detail.get("user_site_enabled") is not False
         or python_detail.get("requirements_lock_sha256") != current_lock_sha256
         or python_detail.get("package_mismatches")
         or python_detail.get("unexpected_distributions")
     ):
         blockers.append(
-            "locked Windows CPython 3.11 project runtime evidence is missing or invalid"
+            "locked platform CPython 3.11 project runtime evidence is missing or invalid"
         )
     secret_scan_gate = evaluate_secret_scan_receipt()
     if not secret_scan_gate.get("ok"):
